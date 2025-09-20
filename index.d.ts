@@ -11,5 +11,5 @@ declare global {
   var redis: RedisClientType
   var segment: typeof import("oicq")["segment"]
   var logger: LoggerMethods
-  var plugin: Plugin
+  var plugin: typeof Plugin
 }

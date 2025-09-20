@@ -38,25 +38,25 @@ export interface HandlerConfig {
   [k: string]: any
 }
 
-// export interface PluginOptions {
-//   /** 插件名称 */
-//   name?: string
-//   /** 插件描述 */
-//   dsc?: string
-//   /** handler配置 */
-//   handler?: HandlerConfig | Record<string, any>
-//   /** namespace，设置handler时建议设置 */
-//   namespace?: string
-//   /** 监听事件（默认 message） */
-//   event?: string
-//   /** 优先级（数字，越小优先级越高） */
-//   priority?: number
-//   /** 定时任务（或数组） */
-//   task?: PluginTask | PluginTask[]
-//   /** 命令规则数组 */
-//   rule?: PluginRule[]
-//   [k: string]: any
-// }
+export interface PluginOptions {
+  /** 插件名称 */
+  name?: string
+  /** 插件描述 */
+  dsc?: string
+  /** handler配置 */
+  handler?: HandlerConfig | Record<string, any>
+  /** namespace，设置handler时建议设置 */
+  namespace?: string
+  /** 监听事件（默认 message） */
+  event?: string
+  /** 优先级（数字，越小优先级越高） */
+  priority?: number
+  /** 定时任务（或数组） */
+  task?: PluginTask | PluginTask[]
+  /** 命令规则数组 */
+  rule?: PluginRule[]
+  [k: string]: any
+}
 
 /**
  * 事件对象的最小类型（根据源码使用到的字段）
@@ -82,46 +82,24 @@ export interface PluginEvent {
  * 在继承时，this.e 将有类型提示，this.reply 等也有类型提示
  */
 export default class plugin {
-  /**
-   * 构造参数参考：name/dsc/handler/namespace/event/priority/task/rule
-   */
-  constructor(options?: {
-  /** 插件名称 */
-  name?: string
-  /** 插件描述 */
-  dsc?: string
-  /** handler配置 */
-  handler?: HandlerConfig | Record<string, any>
-  /** namespace，设置handler时建议设置 */
-  namespace?: string
-  /** 监听事件（默认 message） */
-  event?: string
-  /** 优先级（数字，越小优先级越高） */
-  priority?: number
-  /** 定时任务（或数组） */
-  task?: PluginTask | PluginTask[]
-  /** 命令规则数组 */
-  rule?: PluginRule[]
-  [k: string]: any
-}
-)
+  constructor(options?: PluginOptions)
 
   /** 插件名称 */
-  name: string
+  name: PluginOptions["name"]
   /** 插件描述 */
-  dsc: string
+  dsc: PluginOptions["dsc"]
   /** 监听事件（默认 message） */
-  event: string
+  event: PluginOptions["event"]
   /** 优先级（数字，越小越高） */
-  priority: number
+  priority: PluginOptions["priority"]
   /** 定时任务（或数组） */
-  task: PluginTask | PluginTask[]
+  task: PluginOptions["task"]
   /** 命令规则数组 */
-  rule: PluginRule[]
+  rule: PluginOptions["rule"]
   /** 可选的 handler 配置（如果有） */
-  handler?: HandlerConfig | Record<string, any>
+  handler?: PluginOptions["handler"]
   /** handler 命名空间 */
-  namespace?: string
+  namespace?: PluginOptions["namespace"]
 
   /**
    * 当前触发事件对象（在事件触发时会有）
