@@ -1,15 +1,15 @@
-import type { EventEmitter } from "events"
+type _EventEmitter = import("events").EventEmitter
 import type { RedisClientType } from "redis"
 import type { Yunzai } from "./Bot"
-import type { segment as SegmentType } from "oicq"
 import type { LoggerMethods } from "./logger"
+import type Plugin from "./plugin"
 
 export {}
 
 declare global {
-  type _EventEmitter = EventEmitter
   var Bot: Yunzai
   var redis: RedisClientType
-  var segment: typeof SegmentType
+  var segment: typeof import("oicq")["segment"]
   var logger: LoggerMethods
+  var plugin: Plugin
 }
