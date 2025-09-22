@@ -1,8 +1,4 @@
-// types/index.d.ts
-/**
- * 为 JS 版 plugin 提供的 TypeScript 声明
- * 对应源码（export default class plugin）
- */
+import type { Message } from "icqq"
 
 export interface PluginRule {
   /** 正则或命令匹配 */
@@ -14,7 +10,7 @@ export interface PluginRule {
   /** 是否在日志中显示 */
   log?: boolean
   /** 权限 master|owner|admin|all */
-  permission?: 'master' | 'owner' | 'admin' | 'all' | string
+  permission?: 'master' | 'owner' | 'admin' | 'all'
   [k: string]: any
 }
 
@@ -27,7 +23,6 @@ export interface PluginTask {
   cron?: string
   /** 是否输出日志 */
   log?: boolean
-  [k: string]: any
 }
 
 export interface HandlerConfig {
@@ -35,7 +30,6 @@ export interface HandlerConfig {
   key?: string | string[]
   /** 处理函数 */
   fn?: (...args: any[]) => any
-  [k: string]: any
 }
 
 export interface PluginOptions {
@@ -55,7 +49,6 @@ export interface PluginOptions {
   task?: PluginTask | PluginTask[]
   /** 命令规则数组 */
   rule?: PluginRule[]
-  [k: string]: any
 }
 
 /**
@@ -63,25 +56,24 @@ export interface PluginOptions {
  * e.reply(...) | e.self_id | e.group_id | e.user_id
  * 根据你的实际平台可以把它扩展成更精确的类型
  */
-export interface PluginEvent {
+export interface PluginEvent extends Message {
   /** 机器人自身ID */
-  self_id: number
+  self_id: number | string
   /** 用户ID */
-  user_id: number
+  user_id: number | string
   /** 群组ID */
-  group_id: number
+  group_id: number | string
   /** 消息ID */
   message: string
-  /** 快速回复 */
+  /** 回复消息 */
   reply: (msg?: any, quote?: boolean, data?: Record<string, any>) => any
   [k: string]: any
 }
 
 /**
- * 默认导出的插件类（JS 中 export default class plugin）
- * 在继承时，this.e 将有类型提示，this.reply 等也有类型提示
+ * Plugin
  */
-export class plugin {
+export class Plugin {
   constructor(options?: PluginOptions)
 
   /** 插件名称 */
@@ -101,16 +93,9 @@ export class plugin {
   /** handler 命名空间 */
   namespace?: PluginOptions["namespace"]
 
-  /**
-   * 当前触发事件对象（在事件触发时会有）
-   * this.e.reply(...) / this.e.group_id / this.e.user_id 等
-   */
+  /** 消息事件 */
+  // TODO 支持泛型
   e?: PluginEvent
-
-  /** 有时会直接在插件实例上设置这些 id，源码中会读取 this.self_id / this.e.self_id */
-  self_id?: number | string
-  user_id?: number | string
-  group_id?: number | string
 
   /**
    * 发送回复（会调用 this.e.reply）
@@ -165,6 +150,4 @@ export class plugin {
   renderImg(plugin: string, tpl: string, data?: any, cfg?: Record<string, any>): Promise<any>
 }
 
-export default plugin
-
-export declare const Plugin: plugin
+export default Plugin
