@@ -1,10 +1,11 @@
 {
   "name": "@kaguyajs/trss-yunzai-types",
-  "version": "0.0.1-alpha.8",
+  "version": "0.0.1-alpha.9",
   "type": "module",
   "types": "index.d.ts",
   "scripts": {
-    "pub": "npm publish --access public"
+    "pub": "npm publish --access public",
+    "pub:alpha": "pnpm pub --tag alpha"
   },
   "peerDependencies": {
     "icqq": ">=0.6.10"

@@ -57,6 +57,10 @@ export interface PluginOptions {
  * 根据你的实际平台可以把它扩展成更精确的类型
  */
 export interface PluginEvent extends Message {
+  /** 提及者id */
+  at?: number | string
+  /** 消息内容 */
+  msg: string
   /** 机器人自身ID */
   self_id: number | string
   /** 用户ID */

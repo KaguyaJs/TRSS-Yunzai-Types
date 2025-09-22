@@ -26,6 +26,7 @@ interface UinArray extends Array<string | number> {
  * 这些对象在源码中会被赋予 sendMsg / sendFile / makeForwardMsg / sendForwardMsg / getInfo 等方法
  */
 interface ChatUser extends BaseUser {
+  uid: number | string
   /** 用户id */
   user_id: number | string
   // sendMsg: (...args: any[]) => any
