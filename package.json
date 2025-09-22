@@ -1,6 +1,6 @@
 {
   "name": "@kaguyajs/trss-yunzai-types",
-  "version": "0.0.1-alpha.5",
+  "version": "0.0.1-alpha.6",
   "type": "module",
   "types": "index.d.ts",
   "scripts": {
@@ -11,6 +11,7 @@
   ],
   "devDependencies": {
     "chalk": "^5.6.2",
+    "level": "^10.0.0",
     "log4js": "^6.9.1",
     "oicq": "^2.3.1",
     "redis": "^5.8.2"

@@ -81,7 +81,7 @@ export interface PluginEvent {
  * 默认导出的插件类（JS 中 export default class plugin）
  * 在继承时，this.e 将有类型提示，this.reply 等也有类型提示
  */
-export default class plugin {
+export class plugin {
   constructor(options?: PluginOptions)
 
   /** 插件名称 */
@@ -164,3 +164,7 @@ export default class plugin {
    */
   renderImg(plugin: string, tpl: string, data?: any, cfg?: Record<string, any>): Promise<any>
 }
+
+export default plugin
+
+export declare const Plugin: plugin
