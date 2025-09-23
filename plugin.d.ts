@@ -5,11 +5,11 @@ export interface PluginRule {
   reg: string | RegExp
   /** 执行函数名 */
   fnc: string
-  /** 可覆盖事件类型（默认 message） */
+  /** 可覆盖事件类型 */
   event?: string
-  /** 是否在日志中显示 */
+  /** 是否显示执行日志 */
   log?: boolean
-  /** 权限 master|owner|admin|all */
+  /** 触发者所需权限 */
   permission?: 'master' | 'owner' | 'admin' | 'all'
   [k: string]: any
 }
@@ -88,7 +88,7 @@ export class Plugin<T extends keyof EventMap = "message">{
   dsc: PluginOptions<T>["dsc"]
   /** 监听事件（默认 message） */
   event: PluginOptions<T>["event"]
-  /** 优先级（数字，越小越高） */
+  /** 优先级（数字越小越高） */
   priority: PluginOptions<T>["priority"]
   /** 定时任务（或数组） */
   task: PluginOptions<T>["task"]
@@ -155,4 +155,4 @@ export class Plugin<T extends keyof EventMap = "message">{
   [k: string]: any
 }
 
-export default Plugin
+// export default Plugin

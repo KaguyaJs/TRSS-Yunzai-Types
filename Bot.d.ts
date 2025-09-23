@@ -3,7 +3,7 @@ import type express from "express"
 import type http from "node:http"
 import type { WebSocketServer } from "ws"
 import type {
-  Client,
+  Client as BaseClient,
   User as BaseUser,
   Group as BaseGroup,
   Friend as BaseFriend,
@@ -15,7 +15,7 @@ import type {
 /**
  * uin 的特殊数组行为
  */
-interface UinArray extends Array<string | number> {
+interface BotUin extends Array<string | number> {
   now?: string | number
   toJSON(): string | number
   toString(raw?: boolean, ...args: any[]): string
@@ -26,7 +26,7 @@ interface UinArray extends Array<string | number> {
  * Friend / Group / Member 的基础类型（根据源码拓展常用字段/方法）
  * 这些对象在源码中会被赋予 sendMsg / sendFile / makeForwardMsg / sendForwardMsg / getInfo 等方法
  */
-interface ChatUser extends BaseUser {
+interface User extends BaseUser {
   uid: number | string
   /** 用户id */
   user_id: number | string
@@ -35,15 +35,15 @@ interface ChatUser extends BaseUser {
   // [k: string]: any
 }
 
-interface Member extends ChatUser, BaseMember { }
+interface Member extends User, BaseMember { }
 
-interface Group extends ChatUser, BaseGroup {
+interface Group extends User, BaseGroup {
   group_id?: number | string
   group_name?: string
   pickMember: (user_id: number | string) => Member
 }
 
-interface Friend extends ChatUser, BaseFriend { }
+interface Friend extends User, BaseFriend { }
 
 interface Adapter {
   /** 适配器标识符 */
@@ -55,9 +55,8 @@ interface Adapter {
 
 /**
  * 单个 bot 实例（this.bots[bot_id]）
- * 源码中 bots[*] 至少有 fl (friend list), gl (group list), gml 等字段
  */
-interface BotClient extends Client {
+interface Client extends BaseClient {
   /** 返回好友列表 Map */
   fl: Map<number | string, Friend>
   /** 返回群聊列表 Map */
@@ -98,13 +97,13 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   bot: this
 
   // 所有子 bot（key 常为 bot id / uin）
-  bots: Record<string, BotClient>
+  bots: Record<string, Client>
 
   /** 
    * Bot账号数组   
    * 默认返回单个账号
    * */
-  uin: UinArray
+  uin: BotUin
 
   /** 适配器列表 */
   adapter: Adapter[]
@@ -169,7 +168,7 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   get gml(): Map<any, any>
 
   pickFriend(user_id: string | number, strict?: boolean): Friend
-  readonly pickUser: (user_id: string | number, strict?: boolean) => ChatUser
+  readonly pickUser: (user_id: string | number, strict?: boolean) => User
 
   pickGroup(group_id: string | number, strict?: boolean): Group
   pickMember(group_id: string | number, user_id: string | number): Member
@@ -197,5 +196,5 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   restart(): Promise<void>
 
 
-  [key: string]: BotClient | undefined
+  [key: string]: Client | undefined
 }

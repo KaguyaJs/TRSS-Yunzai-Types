@@ -2,7 +2,7 @@ import { type ChalkInstance } from "chalk"
 import log4js from "log4js"
 
 
-export interface LoggerMethods extends ChalkInstance{
+export interface Logger extends ChalkInstance{
   defaultLogger: log4js.Logger
   commandLogger: log4js.Logger
   errorLogger: log4js.Logger

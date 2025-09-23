@@ -158,4 +158,4 @@ export declare class Utils {
   debounce<T extends (...args: any[]) => any>(func: T, time?: number): (...args: Parameters<T>) => Promise<ReturnType<T>>
 }
 
-export default Utils
+// export default Utils
