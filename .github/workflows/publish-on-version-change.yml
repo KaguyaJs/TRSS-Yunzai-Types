@@ -1,0 +1,174 @@
+name: 🚀 Release and Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: https://registry.npmjs.org
+    steps:
+      - name: 🛠️ 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️ 设置 Node.js 环境
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: ${{ env.REGISTRY }}
+
+      - name: 📝 读取 package 名称与版本
+        id: pkg
+        run: |
+          echo "name=$(jq -r .name package.json)" >> $GITHUB_OUTPUT
+          echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+
+      - name: 🌐 查询 npm registry 上已发布的版本
+        id: published
+        run: |
+          PACKAGE="${{ steps.pkg.outputs.name }}"
+          PUBLISHED=$(npm view "$PACKAGE" version --registry $REGISTRY 2>/dev/null || echo "")
+          echo "published=$PUBLISHED" >> $GITHUB_OUTPUT
+
+      - name: ✅ 决定是否需要发布
+        id: decide
+        run: |
+          local_ver="${{ steps.pkg.outputs.version }}"
+          remote_ver="${{ steps.published.outputs.published }}"
+          echo "local=$local_ver" >> $GITHUB_OUTPUT
+          echo "remote=$remote_ver" >> $GITHUB_OUTPUT
+
+          if [ -z "$remote_ver" ] || [ "$local_ver" != "$remote_ver" ]; then
+            echo "should_publish=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_publish=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📦 准备 pnpm
+        if: steps.decide.outputs.should_publish == 'true'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.13.2
+          run_install: false
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_REGISTRY: ${{ env.REGISTRY }}
+
+      - name: 🔐 准备 npm auth
+        if: steps.decide.outputs.should_publish == 'true'
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: 🧾 预览将被打包的内容
+        if: steps.decide.outputs.should_publish == 'true'
+        run: pnpm pack --dry-run
+
+      - name: 🚀 发布到 NPM
+        if: steps.decide.outputs.should_publish == 'true'
+        id: npm_publish
+        env:
+          PACKAGE_NAME: ${{ steps.pkg.outputs.name }}
+          LOCAL_VERSION: ${{ steps.pkg.outputs.version }}
+        run: |
+          set -e
+          VERSION="$LOCAL_VERSION"
+          TAG_FLAG=""
+          if echo "$VERSION" | grep -qi "alpha"; then
+            TAG_FLAG="--tag alpha"
+          elif echo "$VERSION" | grep -qi "beta"; then
+            TAG_FLAG="--tag beta"
+          elif echo "$VERSION" | grep -qi "rc"; then
+            TAG_FLAG="--tag rc"
+          else
+            TAG_FLAG=""
+          fi
+
+          echo "发布: $PACKAGE_NAME@$VERSION"
+          echo "Tag 参数: $TAG_FLAG"
+
+          if [ -z "$TAG_FLAG" ]; then
+            pnpm publish --access public
+          else
+            pnpm publish --access public $TAG_FLAG
+          fi
+
+      - name: 🔖 确定是否为 prerelease（alpha/beta/rc）
+        if: steps.decide.outputs.should_publish == 'true'
+        id: release_type
+        run: |
+          VERSION="${{ steps.pkg.outputs.version }}"
+          if echo "$VERSION" | grep -qi "alpha\|beta\|rc"; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🏷️ 创建并 push Git tag
+        if: steps.decide.outputs.should_publish == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          TAG="v${{ steps.pkg.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 若 tag 已存在则跳过
+          if git rev-parse "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists, skipping tag creation."
+          else
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+            echo "Pushed tag $TAG"
+          fi
+
+      - name: 📝 生成 Release Notes
+        if: steps.decide.outputs.should_publish == 'true'
+        id: notes
+        run: |
+          set -e
+          TAG="v${{ steps.pkg.outputs.version }}"
+
+          # 保证有所有历史
+          git fetch --prune --unshallow || true
+
+          # 找到最近一个 tag（不包括当前 tag），用于生成变更区间
+          PREV_TAG=$(git describe --tags --abbrev=0 "$TAG^" 2>/dev/null || true)
+
+          if [ -n "$PREV_TAG" ]; then
+            NOTES=$(git log --no-merges --pretty=format:'- %s (%h)' "${PREV_TAG}..HEAD")
+          else
+            NOTES=$(git log --no-merges --pretty=format:'- %s (%h)' -n 50)
+          fi
+
+          # 如果没有内容，写一行提示
+          if [ -z "$NOTES" ]; then
+            NOTES="No changelog available."
+          fi
+
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 🏁 创建 GitHub Release
+        if: steps.decide.outputs.should_publish == 'true'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ steps.pkg.outputs.version }}"
+          name: "${{ steps.pkg.outputs.name }} v${{ steps.pkg.outputs.version }}"
+          body: ${{ steps.notes.outputs.notes }}
+          draft: false
+          prerelease: ${{ steps.release_type.outputs.prerelease }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
