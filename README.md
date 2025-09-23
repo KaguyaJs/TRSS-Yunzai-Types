@@ -29,7 +29,7 @@ npm i -D @kaguyajs/trss-yunzai-types # or pnpm i -D @kaguyajs/trss-yunzai-types
 ## 已支持类型
 
   > [!WARNING]
-  > 本项目的大部分类型继承自ICQQ.js，更偏向于QQ平台，因此对于其他非QQ平台可能出现一些不确定因素，请酌情选择使用。
+  > 本项目的大部分类型继承自ICQQ.js，更偏向于QQ平台，因此对于其他非QQ平台可能出现一些奇奇怪怪的问题，请酌情选择使用。
 
  - [x] logger
  - [x] segment
@@ -37,15 +37,15 @@ npm i -D @kaguyajs/trss-yunzai-types # or pnpm i -D @kaguyajs/trss-yunzai-types
  - [x] redis
  - [x] plugin
 
-# 许可证
+## 许可证
 
 [GNU General Public License v3.0](./LICENSE)
 
-# 免责声明
+## 免责声明
 
-仅供学习使用，禁止用于任何违法用途。
+本项目仅供学习使用，禁止用于任何违法用途。
 
-# 相关链接
+## 相关链接
 
 - [TRSS-Yunzai](https://github.com/TimeRainStarSky/Yunzai)
 - [Miao-Yunzai](https://github.com/yoimiya-kokomi/Miao-Yunzai)
