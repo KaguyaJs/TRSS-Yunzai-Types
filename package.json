@@ -1,6 +1,6 @@
 {
   "name": "@kaguyajs/trss-yunzai-types",
-  "version": "0.0.1-alpha.9",
+  "version": "0.0.1-alpha.15",
   "type": "module",
   "types": "index.d.ts",
   "scripts": {

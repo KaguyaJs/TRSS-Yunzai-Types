@@ -1,4 +1,3 @@
-// 本部分由ai生成，内容可能存在不准确性
 import type { EventEmitter } from "events"
 import type express from "express"
 import type http from "node:http"
@@ -11,8 +10,10 @@ import type {
   Member as BaseMember
 } from "icqq"
 
+// TODO 等待类型补全
+
 /**
- * uin 的特殊数组行为（源码实现了 toJSON/toString/includes/now 等）
+ * uin 的特殊数组行为
  */
 interface UinArray extends Array<string | number> {
   now?: string | number
@@ -64,8 +65,11 @@ interface BotClient extends Client {
   /** 返回群成员列表 Map */
   gml: Map<number | string, Member>
 
+  /** 获得一个好友对象 */
   pickFriend: (user_id: number | string, strict?: boolean) => Friend
+  /** 获得一个群对象 */
   pickGroup: (group_id: number | string, strict?: boolean) => Group
+  /** 获得一个群友对象 */
   pickMember: (group_id: number | string, user_id: number | string) => Member
 
   /** 适配器信息 */
@@ -96,6 +100,10 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   // 所有子 bot（key 常为 bot id / uin）
   bots: Record<string, BotClient>
 
+  /** 
+   * Bot账号数组   
+   * 默认返回单个账号
+   * */
   uin: UinArray
 
   /** 适配器列表 */
@@ -130,8 +138,7 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   httpsLoad(): Promise<void>
 
   /**
-   * 启动
-   * 
+   * 启动流程  
    * Yunazi，启动！
    */
   run(): Promise<void>
@@ -167,11 +174,9 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   pickGroup(group_id: string | number, strict?: boolean): Group
   pickMember(group_id: string | number, user_id: string | number): Member
 
-  // 发送消息（源码对未在线 bot 有等待逻辑，因此返回值可能是 Promise）
   sendFriendMsg(bot_id: string | number | undefined | null, user_id: string | number, ...args: any[]): any
   sendGroupMsg(bot_id: string | number | undefined | null, group_id: string | number, ...args: any[]): any
 
-  // 等待/获取文本消息工具
   getTextMsg(fnc?: ((data: any) => boolean) | { self_id?: any; user_id?: any }): Promise<string>
   getMasterMsg(): Promise<string>
   /** 发送全部主人消息 */
@@ -182,9 +187,13 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   makeForwardArray(msg?: any | any[], node?: object): any
   sendForwardMsg(send: (msg: any) => Promise<any> | any, msg: any): Promise<any[]>
 
-  // redis / 进程控制
   redisExit(): Promise<boolean>
+  /** 
+   * 退出进程
+   * @param code 状态码
+   */
   exit(code?: number): Promise<void> | void
+  /** 重启 */
   restart(): Promise<void>
 
 
