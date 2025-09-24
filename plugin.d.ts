@@ -1,4 +1,4 @@
-import type { Message, EventMap, FileElem } from "icqq"
+import type { Message, EventMap, FileElem, MessageRet, Sendable } from "icqq"
 
 export interface PluginRule {
   /** 正则或命令匹配 */
@@ -74,6 +74,18 @@ export class Event {
   logFnc: string
   /** 接收到的文件 */
   file: FileElem
+  /**
+   * 发送回复
+   * @param msg 支持字符串或 segment
+   * @param quote 是否引用回复
+   * @param data 额外配置
+   */
+  reply(msg: Sendable, quote?: boolean, data?: {
+    /** 是否提及用户 */
+    at?: boolean
+    /** 多久之后撤回消息，0-120秒，0不撤回 */
+    recallMsg?: number
+  }): Message & { error?: any[] }
 }
 
 /**
@@ -99,15 +111,9 @@ export class Plugin<T extends keyof EventMap = "message">{
   /** handler 命名空间 */
   namespace?: PluginOptions<T>["namespace"]
 
-  e: Parameters<EventMap[T]>[0] & Event
+  e: Event & Parameters<EventMap[T]>[0]
 
-  /**
-   * 发送回复（会调用 this.e.reply）
-   * @param msg 支持字符串或 segment/object
-   * @param quote 是否引用回复
-   * @param data 额外数据（如 recallMsg / at 等）
-   */
-  reply(msg?: any, quote?: boolean, data?: Record<string, any>): any
+  reply: Event["reply"]
 
   /**
    * 构造用于存储上下文的 key

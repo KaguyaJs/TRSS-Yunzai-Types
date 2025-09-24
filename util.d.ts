@@ -1,12 +1,3 @@
-// types/util.d.ts
-/**
- * 工具单例的类型声明（对应 `export default new (class { ... })()` 的导出）
- *
- * 使用方法：
- * import utils from './util.js'
- * utils.makeLogID(...) // 编辑器自动补全
- */
-
 import type { Stats } from "fs"
 import type { ChildProcess } from "child_process"
 import type { Level } from "level"
@@ -40,8 +31,6 @@ export declare class Utils {
   sleepTimeout: symbol
   /** 用于 debounce 的 symbol */
   debounceTime: symbol
-  /** 可选的运行时状态（代码中用于 getTimeDiff） */
-  // stat?: { start_time?: number }
 
   /** 根据 cfg.bot.log_align 格式化日志 ID */
   makeLogID(id?: any): string

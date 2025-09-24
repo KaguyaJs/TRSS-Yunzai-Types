@@ -72,7 +72,7 @@ jobs:
 
       - name: 🧾 预览将被打包的内容
         if: steps.decide.outputs.should_publish == 'true'
-        run: pnpm pack --dry-run
+        run: npm pack --dry-run
 
       - name: 🚀 发布到 NPM
         if: steps.decide.outputs.should_publish == 'true'
@@ -80,6 +80,7 @@ jobs:
         env:
           PACKAGE_NAME: ${{ steps.pkg.outputs.name }}
           LOCAL_VERSION: ${{ steps.pkg.outputs.version }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -e
           VERSION="$LOCAL_VERSION"
@@ -166,7 +167,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: "v${{ steps.pkg.outputs.version }}"
-          name: "${{ steps.pkg.outputs.name }} v${{ steps.pkg.outputs.version }}"
+          name: "v${{ steps.pkg.outputs.version }}"
           body: ${{ steps.notes.outputs.notes }}
           draft: false
           prerelease: ${{ steps.release_type.outputs.prerelease }}

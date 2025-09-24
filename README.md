@@ -15,14 +15,13 @@ npm i -D @kaguyajs/trss-yunzai-types # or pnpm i -D @kaguyajs/trss-yunzai-types
 
 2. 配置
 
-在你的项目中的`jsconfig.json`或`tsconfig.json`为`types`字段添加包名
+在你的项目的`jsconfig.json`或`tsconfig.json`中添加`types`字段
 
 ```json
 {
   "types": [
     "@kaguyajs/trss-yunzai-types"
   ]
-  // 你的其他配置
 }
 ```
 
