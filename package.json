@@ -1,6 +1,6 @@
 {
   "name": "@kaguyajs/trss-yunzai-types",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "types": "index.d.ts",
   "license":"GPL-3.0-only",

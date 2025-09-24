@@ -1,4 +1,5 @@
 import type { Message, EventMap, FileElem, MessageRet, Sendable } from "icqq"
+import type { Group, Friend } from "./Bot"
 
 export interface PluginRule {
   /** 正则或命令匹配 */
@@ -64,6 +65,8 @@ export class Event {
   atBot?: true
   /** 图片消息数组 */
   img?: string[]
+  /** 触发者是否为主人 */
+  isMaster?: true
   /** 是否为私聊 */
   isPrivate?: true
   /** 是否为群聊 */
@@ -74,6 +77,13 @@ export class Event {
   logFnc: string
   /** 接收到的文件 */
   file: FileElem
+  /** 是否包含别名 */
+  hasAlias?: true
+  /** 
+   * 撤回消息  
+   * 等效于 `e.group.recallMsg` 或 `e.friend.recallMsg`
+   */
+  recall?: (Group|Friend)["recallMsg"]
   /**
    * 发送回复
    * @param msg 支持字符串或 segment
@@ -85,7 +95,7 @@ export class Event {
     at?: boolean
     /** 多久之后撤回消息，0-120秒，0不撤回 */
     recallMsg?: number
-  }): Message & { error?: any[] }
+  }): MessageRet & { error?: any[] }
 }
 
 /**
@@ -111,6 +121,7 @@ export class Plugin<T extends keyof EventMap = "message">{
   /** handler 命名空间 */
   namespace?: PluginOptions<T>["namespace"]
 
+  /** 消息事件 */
   e: Event & Parameters<EventMap[T]>[0]
 
   reply: Event["reply"]

@@ -35,14 +35,15 @@ interface User extends BaseUser {
   // [k: string]: any
 }
 
+/** 群成员对象 */
 interface Member extends User, BaseMember { }
 
+/** 群对象 */
 interface Group extends User, BaseGroup {
   group_id?: number | string
-  group_name?: string
-  pickMember: (user_id: number | string) => Member
 }
 
+/** 好友对象 */
 interface Friend extends User, BaseFriend { }
 
 interface Adapter {
