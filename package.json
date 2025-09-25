@@ -1,6 +1,11 @@
 {
   "name": "@kaguyajs/trss-yunzai-types",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "author": {
+    "name": "DenFengLai",
+    "url": "https://github.com/DenFengLai",
+    "email": "dengfenglai547@gmail.com"
+  },
   "type": "module",
   "types": "index.d.ts",
   "license":"GPL-3.0-only",
