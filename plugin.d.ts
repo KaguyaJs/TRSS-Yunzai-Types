@@ -122,7 +122,7 @@ export class Plugin<T extends keyof EventMap = "message">{
   namespace?: PluginOptions<T>["namespace"]
 
   /** 消息事件 */
-  e: Event & Parameters<EventMap[T]>[0]
+  e: Parameters<EventMap[T]>[0] & Event
 
   reply: Event["reply"]
 
