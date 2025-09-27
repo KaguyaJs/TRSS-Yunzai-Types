@@ -99,9 +99,9 @@ jobs:
           echo "Tag 参数: $TAG_FLAG"
 
           if [ -z "$TAG_FLAG" ]; then
-            pnpm publish --access public
+            npm publish --access public
           else
-            pnpm publish --access public $TAG_FLAG
+            npm publish --access public $TAG_FLAG
           fi
 
       - name: 🔖 确定是否为 prerelease（alpha/beta/rc）
