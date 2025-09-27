@@ -7,8 +7,15 @@ import type {
   User as BaseUser,
   Group as BaseGroup,
   Friend as BaseFriend,
-  Member as BaseMember
+  Member as BaseMember,
+  EventMap
 } from "icqq"
+
+export type Dispose = () => boolean | void;
+export type ToDispose<T> = T & Dispose;
+
+export type MatcherFn = (...args: any[]) => boolean;
+export type Matcher = string | symbol | RegExp | MatcherFn;
 
 // TODO 等待类型补全
 
@@ -55,7 +62,7 @@ interface Adapter {
 }
 
 /**
- * 单个 bot 实例（this.bots[bot_id]）
+ * 单个 bot 实例
  */
 interface Client extends BaseClient {
   /** 返回好友列表 Map */
@@ -75,11 +82,21 @@ interface Client extends BaseClient {
   /** 适配器信息 */
   adapter: Adapter
 
-  // 其它任意字段/方法
-  // [k: string]: any
+  [k: string]: any
 }
 
 export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
+  on: ((name: `connect.${string}`, listener: (data: { self_id: number | string, bot: Client }) => void) => ToDispose<this>)
+    & ((name: "connect", listener: (bot: Client) => void) => ToDispose<this>)
+    & ((name: "online", listener: (Yz: Yunzai) => void) => ToDispose<this>)
+    & Client["on"];
+  // TODO 咕咕咕
+  once: Client["once"]
+  trap: Client["trap"]
+  trip: Client["trip"]
+  off<T extends (keyof EventMap) | "connect" | "online">(event: T): void;
+  off<S extends Matcher>(event: S & Exclude<S, keyof EventMap>): void;
+
   /** 运行状态 */
   stat: {
     /** 启动时间 */
