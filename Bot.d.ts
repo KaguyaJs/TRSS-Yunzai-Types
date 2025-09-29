@@ -1,6 +1,6 @@
 import type { EventEmitter } from "events"
 import type express from "express"
-import type http from "node:http"
+import type { Server } from "node:http"
 import type { WebSocketServer } from "ws"
 import type {
   Client as BaseClient,
@@ -33,7 +33,8 @@ interface BotUin extends Array<string | number> {
  * Friend / Group / Member 的基础类型（根据源码拓展常用字段/方法）
  * 这些对象在源码中会被赋予 sendMsg / sendFile / makeForwardMsg / sendForwardMsg / getInfo 等方法
  */
-interface User extends BaseUser {
+// @ts-ignore
+export interface User extends BaseUser {
   uid: number | string
   /** 用户id */
   user_id: number | string
@@ -43,17 +44,20 @@ interface User extends BaseUser {
 }
 
 /** 群成员对象 */
-interface Member extends User, BaseMember { }
+// @ts-ignore
+export interface Member extends User, BaseMember { }
 
 /** 群对象 */
-interface Group extends User, BaseGroup {
+// @ts-ignore
+export interface Group extends User, BaseGroup {
   group_id?: number | string
 }
 
 /** 好友对象 */
-interface Friend extends User, BaseFriend { }
+// @ts-ignore
+export interface Friend extends User, BaseFriend { }
 
-interface Adapter {
+export interface Adapter {
   /** 适配器标识符 */
   id: string
   /** 适配器名称 */
@@ -64,7 +68,8 @@ interface Adapter {
 /**
  * 单个 bot 实例
  */
-interface Client extends BaseClient {
+// @ts-ignore
+export interface Client extends BaseClient {
   /** 返回好友列表 Map */
   fl: Map<number | string, Friend>
   /** 返回群聊列表 Map */
@@ -91,10 +96,13 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
     & ((name: "online", listener: (Yz: Yunzai) => void) => ToDispose<this>)
     & Client["on"];
   // TODO 咕咕咕
+  // @ts-ignore
   once: Client["once"]
   trap: Client["trap"]
   trip: Client["trip"]
+  // @ts-ignore
   off<T extends (keyof EventMap) | "connect" | "online">(event: T): void;
+  // @ts-ignore
   off<S extends Matcher>(event: S & Exclude<S, keyof EventMap>): void;
 
   /** 运行状态 */
@@ -130,8 +138,8 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   express: express.Application & { skip_auth: string[]; quiet: string[] }
 
   // http server / https server / websocket server
-  server: http.Server
-  httpsServer?: http.Server
+  server: Server
+  httpsServer?: Server
   wss: WebSocketServer
   // wsf: path -> handlers[]
   wsf: Record<string, Array<(...args: any[]) => void>>
@@ -214,5 +222,5 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   restart(): Promise<void>
 
 
-  [key: string]: Client | undefined
+  // [key: string]: Client | undefined
 }
