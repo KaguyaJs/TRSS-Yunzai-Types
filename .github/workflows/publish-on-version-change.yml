@@ -144,23 +144,34 @@ jobs:
           # 保证有所有历史
           git fetch --prune --unshallow || true
 
-          # 找到最近一个 tag（不包括当前 tag），用于生成变更区间
           PREV_TAG=$(git describe --tags --abbrev=0 "$TAG^" 2>/dev/null || true)
 
-          if [ -n "$PREV_TAG" ]; then
+          if echo "$TAG" | grep -Eq "alpha|beta|rc"; then
+           # 预发布，正常生成日志
+           if [ -n "$PREV_TAG" ]; then
             NOTES=$(git log --no-merges --pretty=format:'- %s (%h)' "${PREV_TAG}..HEAD")
+           else
+            NOTES=$(git log --no-merges --pretty=format:'- %s (%h)' -n 50)
+           fi
+          else
+          # 正式版，合并所有自上一个正式版以来的日志
+          # 找到上一个正式版 tag
+          LAST_STABLE_TAG=$(git tag --list "v*" --sort=-creatordate | grep -Ev "alpha|beta|rc" | grep -v "^$TAG$" | head -n1)
+          if [ -n "$LAST_STABLE_TAG" ]; then
+            NOTES=$(git log --no-merges --pretty=format:'- %s (%h)' "${LAST_STABLE_TAG}..HEAD")
           else
             NOTES=$(git log --no-merges --pretty=format:'- %s (%h)' -n 50)
           fi
+            fi
 
-          # 如果没有内容，写一行提示
-          if [ -z "$NOTES" ]; then
-            NOTES="No changelog available."
-          fi
+            # 如果没有内容，写一行提示
+            if [ -z "$NOTES" ]; then
+              NOTES="No changelog available."
+            fi
 
-          echo "notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+            echo "notes<<EOF" >> $GITHUB_OUTPUT
+            echo "$NOTES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
 
       - name: 🏁 创建 GitHub Release
         if: steps.decide.outputs.should_publish == 'true'
