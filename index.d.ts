@@ -3,6 +3,7 @@ import type { Yunzai, Client } from "./Bot.d.ts"
 import type { Logger } from "./logger.d.ts"
 import type { Plugin } from "./plugin.d.ts"
 import type { Utils } from "./util.d.ts"
+import type { segment as Segment } from "icqq"
 
 
 declare global {
@@ -10,7 +11,7 @@ declare global {
     [key: string]: Client | undefined
   }
   var redis: Redis
-  var segment: typeof import("oicq")["segment"]
+  var segment: typeof Segment
   var logger: Logger
   var plugin: typeof Plugin
 }

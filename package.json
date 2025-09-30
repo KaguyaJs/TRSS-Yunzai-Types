@@ -1,6 +1,6 @@
 {
   "name": "@kaguyajs/trss-yunzai-types",
-  "version": "1.0.6",
+  "version": "1.0.7-rc.1",
   "author": {
     "name": "DenFengLai",
     "url": "https://github.com/DenFengLai",
@@ -16,9 +16,6 @@
     "pub": "npm publish --access public",
     "pub:alpha": "pnpm pub --tag alpha"
   },
-  "peerDependencies": {
-    "icqq": ">=0.6.10"
-  },
   "files": [
     "*.d.ts",
     "README.md",
@@ -29,13 +26,13 @@
     "express": "^5.1.0",
     "level": "^10.0.0",
     "log4js": "^6.9.1",
-    "oicq": "^2.3.1",
     "redis": "^5.8.2",
     "ws": "^8.18.3"
   },
   "dependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
-    "@types/ws": "^8.18.1"
+    "@types/ws": "^8.18.1",
+    "icqq": ">=0.6.10"
   }
 }
