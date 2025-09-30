@@ -65,14 +65,18 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_REGISTRY: ${{ env.REGISTRY }}
 
-      - name: 🔐 准备 npm auth
-        if: steps.decide.outputs.should_publish == 'true'
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      # - name: 🔐 准备 npm auth
+      #   if: steps.decide.outputs.should_publish == 'true'
+      #   run: |
+      #     echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: 🧾 预览将被打包的内容
         if: steps.decide.outputs.should_publish == 'true'
         run: npm pack --dry-run
+
+      - name: 🧹 删除开发依赖
+        run: pnpm pkg delete devDependencies
+        if: steps.decide.outputs.should_publish == 'true'
 
       - name: 🚀 发布到 NPM
         if: steps.decide.outputs.should_publish == 'true'
