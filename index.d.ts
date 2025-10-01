@@ -1,4 +1,4 @@
-import type { RedisClientType as Redis } from "redis"
+import type { Redis } from "./redis.d.ts"
 import type { Yunzai, Client } from "./Bot.d.ts"
 import type { Logger } from "./logger.d.ts"
 import type { Plugin } from "./plugin.d.ts"

@@ -8,54 +8,54 @@ import type {
   Group as BaseGroup,
   Friend as BaseFriend,
   Member as BaseMember,
-  EventMap
+  EventMap,
+  FriendInfo,
+  MemberInfo,
+  GroupInfo,
+  Sendable,
+  MessageRet
 } from "icqq"
+import type { ToDispose, Merge } from "./internal/index.d.ts"
 
-export type Dispose = () => boolean | void;
-export type ToDispose<T> = T & Dispose;
 
-export type MatcherFn = (...args: any[]) => boolean;
-export type Matcher = string | symbol | RegExp | MatcherFn;
-
-// TODO 等待类型补全
-
-/**
- * uin 的特殊数组行为
- */
 interface BotUin extends Array<string | number> {
   now?: string | number
+  /** 兼容：返回随机一个bot的uin */
   toJSON(): string | number
+  /**
+   * 随机返回一个uin并转化为string
+   * @param raw 是否使用原生数组的 toString
+   */
   toString(raw?: boolean, ...args: any[]): string
   includes(value: any): boolean
 }
 
-/**
- * Friend / Group / Member 的基础类型（根据源码拓展常用字段/方法）
- * 这些对象在源码中会被赋予 sendMsg / sendFile / makeForwardMsg / sendForwardMsg / getInfo 等方法
- */
 // @ts-ignore
 export interface User extends BaseUser {
-  uid: number | string
   /** 用户id */
   user_id: number | string
-  // sendMsg: (...args: any[]) => any
-  getInfo: () => any
-  // [k: string]: any
+  getInfo: () => Promise<FriendInfo | MemberInfo | undefined>
 }
 
 /** 群成员对象 */
 // @ts-ignore
-export interface Member extends User, BaseMember { }
+export interface Member extends BaseMember, User {
+  getInfo: () => Promise<MemberInfo | undefined>
+}
 
 /** 群对象 */
 // @ts-ignore
-export interface Group extends User, BaseGroup {
-  group_id?: number | string
+export interface Group extends BaseGroup, User {
+  group_id: number | string
+  getInfo: () => Promise<GroupInfo>
 }
 
 /** 好友对象 */
 // @ts-ignore
-export interface Friend extends User, BaseFriend { }
+export interface Friend extends BaseFriend, User {
+  getInfo: () => Promise<FriendInfo | undefined>
+}
+
 
 export interface Adapter {
   /** 适配器标识符 */
@@ -71,11 +71,11 @@ export interface Adapter {
 // @ts-ignore
 export interface Client extends BaseClient {
   /** 返回好友列表 Map */
-  fl: Map<number | string, Friend>
+  fl: Map<number | string, FriendInfo>
   /** 返回群聊列表 Map */
-  gl: Map<number | string, Group>
+  gl: Map<number | string, GroupInfo>
   /** 返回群成员列表 Map */
-  gml: Map<number | string, Member>
+  gml: Map<number | string, MemberInfo>
 
   /** 获得一个好友对象 */
   pickFriend: (user_id: number | string, strict?: boolean) => Friend
@@ -95,15 +95,10 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
     & ((name: "connect", listener: (bot: Client) => void) => ToDispose<this>)
     & ((name: "online", listener: (Yz: Yunzai) => void) => ToDispose<this>)
     & Client["on"];
-  // TODO 咕咕咕
   // @ts-ignore
   once: Client["once"]
   trap: Client["trap"]
   trip: Client["trip"]
-  // @ts-ignore
-  off<T extends (keyof EventMap) | "connect" | "online">(event: T): void;
-  // @ts-ignore
-  off<S extends Matcher>(event: S & Exclude<S, keyof EventMap>): void;
 
   /** 运行状态 */
   stat: {
@@ -125,10 +120,16 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   // 所有子 bot（key 常为 bot id / uin）
   bots: Record<string, Client>
 
-  /** 
-   * Bot账号数组   
-   * 默认返回单个账号
-   * */
+  /**
+   * 机器人uin数组，向下兼容
+   * @example
+   * ```
+   * Bot.uin.toJSON()        // 12345 or "tg_1234"
+   * Bot.uin.toString()      // "12345" or "tg_1234"
+   * Bot.uin.toString(true)  // "12345,tg_1234"
+   * Array.from(Bot.uin)     // [ 12345, "tg_1234" ]
+   * ```
+   */
   uin: BotUin
 
   /** 适配器列表 */
@@ -180,38 +181,138 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   prepareEvent(data: any): void
   em(name?: string, data?: any): void
 
-  // 好友/群/成员 列表/检索工具
-  getFriendArray(): Array<any>
-  getFriendList(): Array<any>
-  getFriendMap(): Map<any, any>
-  readonly fl: Map<any, any>
+  /**
+   * 获取好友列表数组
+   */
+  getFriendArray(): Array<FriendInfo & {
+    bot_id: string | number
+  }>
+  /** 获取好友列表 (id) */
+  getFriendList(): Array<number | string>
+  /** 获取好友列表Map */
+  getFriendMap(): Map<number | string, FriendInfo & {
+    /** 对应的机器人账号 */
+    bot_id: string | number
+  }>
+  /** 
+   * 好友列表
+   */
+  readonly fl: ReturnType<this["getFriendMap"]>
 
-  getGroupArray(): Array<any>
-  getGroupList(): Array<any>
-  getGroupMap(): Map<any, any>
-  readonly gl: Map<any, any>
+  /** 获取群列表数组 */
+  getGroupArray(): Array<GroupInfo & {
+    bot_id: string | number
+  }>
+  /** 获取群列表 (id) */
+  getGroupList(): Array<number | string>
+  /** 获取群列表Map */
+  getGroupMap(): Map<number | string, GroupInfo & {
+    bot_id: string | number
+  }>
+  /** 群列表 */
+  readonly gl: ReturnType<this['getGroupMap']>
 
-  get gml(): Map<any, any>
+  /** 群成员列表Map */
+  get gml(): Map<string | number, Map<string | number, MemberInfo> & {
+    bot_id: string | number
+  }>
 
-  pickFriend(user_id: string | number, strict?: boolean): Friend
-  readonly pickUser: (user_id: string | number, strict?: boolean) => User
+  /** 
+   * 获得一个好友对象 
+   * @param user_id 好友账号
+   * @param strict 严格模式
+  */
+  pickFriend(user_id: string | number): Friend
+  pickFriend(user_id: string | number, strict: false): Friend
+  pickFriend(user_id: string | number, strict: true): Friend | false
+  pickFriend(user_id: string | number, strict?: boolean): Friend | false
 
-  pickGroup(group_id: string | number, strict?: boolean): Group
+  /** 
+   * 获得一个用户对象 
+   * @deprecated 已弃用，请使用 {@link pickFriend}
+   */
+  readonly pickUser: this["pickFriend"]
+
+  /**
+   * 获得一个群对象
+   * @param group_id 群号
+   * @param strict 严格模式
+   */
+  pickGroup(group_id: string | number): Group
+  pickGroup(group_id: string | number, strict: false): Group
+  pickGroup(group_id: string | number, strict: true): Group | false
+  pickGroup(group_id: string | number, strict?: boolean): Group | false
+
+  /**
+   * 获得一个群成员对象
+   * @param group_id 群号
+   * @param user_id 群员id
+   */
   pickMember(group_id: string | number, user_id: string | number): Member
 
-  sendFriendMsg(bot_id: string | number | undefined | null, user_id: string | number, ...args: any[]): any
-  sendGroupMsg(bot_id: string | number | undefined | null, group_id: string | number, ...args: any[]): any
+  /**
+   * 发送一条好友消息 (如果机器人不在线则会等待上线)
+   * @param bot_id 机器人账号
+   * @param user_id 用户id
+   * @param args 消息内容及其他参数（传递给sendMsg)
+   */
+  sendFriendMsg(bot_id: string | number | undefined | null, user_id: string | number, ...args: any[]): ReturnType<Friend["sendMsg"]> | undefined
 
-  getTextMsg(fnc?: ((data: any) => boolean) | { self_id?: any; user_id?: any }): Promise<string>
+  /**
+   * 发送一条群消息 (如果机器人不在线则会等待上线)
+   * @param bot_id 机器人账号
+   * @param group_id 群号
+   * @param args 消息内容及其他参数（传递给sendMsg)
+   */
+  sendGroupMsg(bot_id: string | number | undefined | null, group_id: string | number, ...args: any[]): Promise<ReturnType<Friend["sendMsg"]>>
+
+  /**
+   * 监听文本消息
+   * @param fnc 自定义过滤逻辑
+   */
+  getTextMsg(fnc?: ((data: EventMap["message"]) => boolean) | { self_id: string | number; user_id: string | number }): Promise<string>
+  /** 捕获主人发送的下一条消息 */
   getMasterMsg(): Promise<string>
-  /** 发送全部主人消息 */
-  sendMasterMsg(msg: any, bot_array?: string | string[], sleep?: number): Promise<Record<string, any>>
 
-  // 转发消息相关
-  makeForwardMsg(msg: any): any
-  makeForwardArray(msg?: any | any[], node?: object): any
+  /**
+   * 发送全部主人消息
+   * @param msg 消息内容
+   * @param bot_array 迭代的bot或列表
+   * @param sleep 发送间隔
+   */
+  sendMasterMsg(msg: Sendable, bot_array?: (string | number) | (string | number)[], sleep?: number): Promise<{
+    /** bot */
+    [k: string]: {
+      /** 消息返回 */
+      [k: string]: MessageRet
+    }
+  } | {}>
+
+  /**
+   * 构造转发消息段
+   * @param msg 消息内容
+   */
+  makeForwardMsg<T>(msg: T): { type: "node", data: T }
+
+  /**
+   * 制作转发消息
+   * @param msg 消息内容
+   * @param node
+   */
+  makeForwardArray<M = [], N extends object = {}>(msg?: M | M[], node?: N): {
+    type: "node", data: (N & {
+      message: M
+    })[]
+  }
+
+  /**
+   * 发送转发消息
+   * @param send 发送消息函数
+   * @param msg 消息内容
+   */
   sendForwardMsg(send: (msg: any) => Promise<any> | any, msg: any): Promise<any[]>
 
+  /** 保存Redis数据并关闭 */
   redisExit(): Promise<boolean>
   /** 
    * 退出进程
@@ -220,7 +321,4 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   exit(code?: number): Promise<void> | void
   /** 重启 */
   restart(): Promise<void>
-
-
-  // [key: string]: Client | undefined
 }
