@@ -1,4 +1,4 @@
-import type { Message, EventMap, FileElem, MessageRet, Sendable } from "icqq"
+import type { EventMap, FileElem, MessageRet, Sendable } from "icqq"
 import type { Group, Friend } from "./Bot.d.ts"
 
 export interface PluginRule {

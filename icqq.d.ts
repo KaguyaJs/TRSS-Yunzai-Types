@@ -1,1 +1,1 @@
-export * from "icqq"
+export type * from "icqq"
