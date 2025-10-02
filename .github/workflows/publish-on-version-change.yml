@@ -34,26 +34,24 @@ jobs:
           echo "name=$(jq -r .name package.json)" >> $GITHUB_OUTPUT
           echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
 
-      - name: 🌐 查询 npm registry 上已发布的版本
+      - name: 🌐 检查目标版本是否已存在
         id: published
         run: |
           PACKAGE="${{ steps.pkg.outputs.name }}"
-          PUBLISHED=$(npm view "$PACKAGE" version --registry $REGISTRY 2>/dev/null || echo "")
-          echo "published=$PUBLISHED" >> $GITHUB_OUTPUT
+          VERSION="${{ steps.pkg.outputs.version }}"
+          EXISTS=$(npm view "$PACKAGE@$VERSION" --registry $REGISTRY > /dev/null 2>&1 && echo "true" || echo "false")
+          echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+
 
       - name: ✅ 决定是否需要发布
         id: decide
         run: |
-          local_ver="${{ steps.pkg.outputs.version }}"
-          remote_ver="${{ steps.published.outputs.published }}"
-          echo "local=$local_ver" >> $GITHUB_OUTPUT
-          echo "remote=$remote_ver" >> $GITHUB_OUTPUT
-
-          if [ -z "$remote_ver" ] || [ "$local_ver" != "$remote_ver" ]; then
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-          else
+          if [ "${{ steps.published.outputs.exists }}" = "true" ]; then
             echo "should_publish=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_publish=true" >> $GITHUB_OUTPUT
           fi
+
 
       - name: 📦 准备 pnpm
         if: steps.decide.outputs.should_publish == 'true'
@@ -89,15 +87,13 @@ jobs:
           set -e
           VERSION="$LOCAL_VERSION"
           TAG_FLAG=""
-          if echo "$VERSION" | grep -qi "alpha"; then
-            TAG_FLAG="--tag alpha"
-          elif echo "$VERSION" | grep -qi "beta"; then
-            TAG_FLAG="--tag beta"
-          elif echo "$VERSION" | grep -qi "rc"; then
-            TAG_FLAG="--tag rc"
+          if echo "$VERSION" | grep -Eiq "alpha|beta|rc|next"; then
+            TAG_NAME=$(echo "$VERSION" | grep -Eoi "alpha|beta|rc|next" | head -n1)
+            TAG_FLAG="--tag $TAG_NAME"
           else
             TAG_FLAG=""
           fi
+
 
           echo "发布: $PACKAGE_NAME@$VERSION"
           echo "Tag 参数: $TAG_FLAG"
