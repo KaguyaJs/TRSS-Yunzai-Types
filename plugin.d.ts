@@ -76,7 +76,7 @@ export class Event {
   /** 日志方法字符串 */
   logFnc: string
   /** 接收到的文件 */
-  file: FileElem
+  file?: FileElem
   /** 是否包含别名 */
   hasAlias?: true
   /** 
