@@ -1,0 +1,41 @@
+name: 📖 Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛠️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🏗️ Build docs
+        run: pnpm run docs
+
+      - name: 🚀 Deploy to docs branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: docs
+          force_orphan: true

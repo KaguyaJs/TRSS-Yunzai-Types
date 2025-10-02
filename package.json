@@ -14,7 +14,8 @@
   ],
   "scripts": {
     "pub": "npm publish --access public",
-    "pub:alpha": "pnpm pub --tag alpha"
+    "pub:alpha": "pnpm pub --tag alpha",
+    "docs": "typedoc"
   },
   "files": [
     "*.d.ts",
@@ -27,6 +28,7 @@
     "level": "^10.0.0",
     "log4js": "^6.9.1",
     "redis": "^5.8.2",
+    "typedoc": "^0.28.13",
     "ws": "^8.18.3"
   },
   "dependencies": {
