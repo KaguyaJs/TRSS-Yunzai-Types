@@ -171,10 +171,27 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
 
   /**
    * 把文件映射为可通过 URL 访问
-   * @param file 路径
+   * @param file 文件路径或Buffer
    * @param opts 参数
    */
-  fileToUrl(file: any, opts?: { name?: string; time?: boolean | number; times?: number }): Promise<string>
+  fileToUrll(
+    file: string | Buffer | {
+      buffer: Buffer | any
+      /** 文件名 */
+      name?: string
+      /** 文件范围次数 */
+      times?: number
+    },
+    opts?: {
+      /** 文件名 */
+      name?: string
+      /** 文件保存时间 */
+      time?: number
+      /** 文件访问次数 */
+      times?: number
+    }): Promise<string>
+
+
   fileSend(req: any): void
 
   // 事件处理
