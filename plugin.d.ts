@@ -173,4 +173,7 @@ declare global {
     [k: string]: any
   }
 }
+
+export type Plugin<T extends keyof EventMap = keyof EventMap> = plugin<T>
+
 // export default Plugin
