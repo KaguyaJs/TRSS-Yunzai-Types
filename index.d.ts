@@ -1,7 +1,7 @@
 import type { Redis } from "./redis.d.ts"
 import type { Yunzai, Client } from "./Bot.d.ts"
 import type { Logger } from "./logger.d.ts"
-import type { Plugin } from "./plugin.d.ts"
+// import type { Plugin } from "./plugin.d.ts"
 import type { Utils } from "./util.d.ts"
 import type { Segment } from "./segment.d.ts"
 
@@ -13,7 +13,7 @@ declare global {
   var redis: Redis
   var segment: Segment
   var logger: Logger
-  var plugin: typeof Plugin
+  // var plugin: typeof Plugin
 }
 
 export type * from "./Bot.d.ts"

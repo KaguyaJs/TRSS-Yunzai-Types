@@ -33,7 +33,7 @@ export interface HandlerConfig {
   fn?: (...args: any[]) => any
 }
 
-export interface PluginOptions<T extends keyof EventMap>{
+export interface PluginOptions<T extends keyof EventMap> {
   /** 插件名称 */
   name?: string
   /** 插件描述 */
@@ -83,9 +83,9 @@ export class Event {
    * 撤回消息  
    * 等效于 `e.group.recallMsg` 或 `e.friend.recallMsg`
    */
-  recall?: (Group|Friend)["recallMsg"]
+  recall?: (Group | Friend)["recallMsg"]
   /**
-   * 发送回复
+   * 回复消息
    * @param msg 支持字符串或 segment
    * @param quote 是否引用回复
    * @param data 额外配置
@@ -101,75 +101,76 @@ export class Event {
 /**
  * Plugin
  */
-export class Plugin<T extends keyof EventMap = "message">{
-  constructor(options?: PluginOptions<T>)
+declare global {
+  class plugin<T extends keyof EventMap = keyof EventMap> {
+    constructor(options?: PluginOptions<T>)
 
-  /** 插件名称 */
-  name: PluginOptions<T>["name"]
-  /** 插件描述 */
-  dsc: PluginOptions<T>["dsc"]
-  /** 监听事件（默认 message） */
-  event: PluginOptions<T>["event"]
-  /** 优先级（数字越小越高） */
-  priority: PluginOptions<T>["priority"]
-  /** 定时任务（或数组） */
-  task: PluginOptions<T>["task"]
-  /** 命令规则数组 */
-  rule: PluginOptions<T>["rule"]
-  /** 可选的 handler 配置（如果有） */
-  handler?: PluginOptions<T>["handler"]
-  /** handler 命名空间 */
-  namespace?: PluginOptions<T>["namespace"]
+    /** 插件名称 */
+    name: PluginOptions<T>["name"]
+    /** 插件描述 */
+    dsc: PluginOptions<T>["dsc"]
+    /** 监听事件（默认 message） */
+    event: PluginOptions<T>["event"]
+    /** 优先级（数字越小越高） */
+    priority: PluginOptions<T>["priority"]
+    /** 定时任务（或数组） */
+    task: PluginOptions<T>["task"]
+    /** 命令规则数组 */
+    rule: PluginOptions<T>["rule"]
+    /** 可选的 handler 配置（如果有） */
+    handler?: PluginOptions<T>["handler"]
+    /** handler 命名空间 */
+    namespace?: PluginOptions<T>["namespace"]
 
-  /** 消息事件 */
-  e: Omit<Parameters<EventMap[T]>[0], 'reply'> & Event
+    /** 消息事件 */
+    e: Omit<Parameters<T extends keyof EventMap ? EventMap[T] : EventMap['message']>[0], 'reply'> & Event
 
-  reply: Event["reply"]
+    reply: Event["reply"]
 
-  /**
-   * 构造用于存储上下文的 key
-   * @param isGroup 是否群聊
-   */
-  conKey(isGroup?: boolean): string
+    /**
+     * 构造用于存储上下文的 key
+     * @param isGroup 是否群聊
+     */
+    conKey(isGroup?: boolean): string
 
-  /**
-   * setContext：设置上下文
-   * @param type 自定义类型字符串
-   * @param isGroup 是否群聊
-   * @param time 过期时间（秒）
-   * @param timeout 超时提示文本
-   */
-  setContext(type: string, isGroup?: boolean, time?: number, timeout?: string): any
+    /**
+     * setContext：设置上下文
+     * @param type 自定义类型字符串
+     * @param isGroup 是否群聊
+     * @param time 过期时间（秒）
+     * @param timeout 超时提示文本
+     */
+    setContext(type: string, isGroup?: boolean, time?: number, timeout?: string): any
 
-  /**
-   * getContext：获取上下文（不传 type 则返回整个 key 的对象）
-   */
-  getContext(type?: string, isGroup?: boolean): any
+    /**
+     * getContext：获取上下文（不传 type 则返回整个 key 的对象）
+     */
+    getContext(type?: string, isGroup?: boolean): any
 
-  /**
-   * finish：结束上下文并清理（会 clearTimeout）
-   */
-  finish(type?: string, isGroup?: boolean): void
+    /**
+     * finish：结束上下文并清理（会 clearTimeout）
+     */
+    finish(type?: string, isGroup?: boolean): void
 
-  /**
-   * awaitContext：等待上下文（源码返回 Promise）
-   */
-  awaitContext(...args: any[]): Promise<any>
+    /**
+     * awaitContext：等待上下文
+     */
+    awaitContext(...args: any[]): Promise<any>
 
-  /**
-   * resolveContext：触发 resolve 并结束上下文
-   */
-  resolveContext(context: any): void
+    /**
+     * resolveContext：触发 resolve 并结束上下文
+     */
+    resolveContext(context: any): void
 
-  /**
-   * renderImg：调用 Common.render 生成/渲染图片（源码 import "#miao" 的 Common）
-   * @param plugin 渲染器所属 plugin 名
-   * @param tpl 模板名
-   * @param data 模板数据
-   * @param cfg 额外配置，会把 e 注入到 cfg
-   */
-  renderImg(plugin: string, tpl: string, data?: any, cfg?: Record<string, any>): Promise<any>
-  [k: string]: any
+    /**
+     * renderImg：调用 Common.render 生成/渲染图片（源码 import "#miao" 的 Common）
+     * @param plugin 渲染器所属 plugin 名
+     * @param tpl 模板名
+     * @param data 模板数据
+     * @param cfg 额外配置，会把 e 注入到 cfg
+     */
+    renderImg(plugin: string, tpl: string, data?: any, cfg?: Record<string, any>): Promise<any>
+    [k: string]: any
+  }
 }
-
 // export default Plugin
