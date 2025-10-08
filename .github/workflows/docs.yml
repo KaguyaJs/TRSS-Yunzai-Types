@@ -38,4 +38,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
           publish_branch: docs
-          force_orphan: true
+          force_orphan: false
+          commit_message: "Build: ${{ github.event.head_commit.message }}"
