@@ -6,11 +6,15 @@ import type { Segment } from "./segment.d.ts"
 
 
 declare global {
+  /** Bot */
   var Bot: Yunzai & Utils & {
     [key: string]: Client | undefined
   }
+  /** Redis */
   var redis: Redis
+  /** 构造消息段 */
   var segment: Segment
+  /** 日志工具 */
   var logger: Logger
 }
 

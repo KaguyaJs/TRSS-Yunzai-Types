@@ -95,7 +95,7 @@ export class Event {
     at?: boolean
     /** 多久之后撤回消息，0-120秒，0不撤回 */
     recallMsg?: number
-  }): MessageRet & { error?: any[] }
+  }): Promise<MessageRet & { error?: any[] }>
 }
 
 /**
