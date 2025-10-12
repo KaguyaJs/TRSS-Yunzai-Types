@@ -19,9 +19,11 @@ npm i -D @kaguyajs/trss-yunzai-types # or pnpm i -D @kaguyajs/trss-yunzai-types
 
 ```json
 {
-  "types": [
-    "@kaguyajs/trss-yunzai-types"
-  ]
+  "compilerOptions": {
+    "types": [
+      "@kaguyajs/trss-yunzai-types"
+    ]
+  }
 }
 ```
 
