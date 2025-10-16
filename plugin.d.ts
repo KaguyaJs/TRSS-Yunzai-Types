@@ -1,5 +1,5 @@
-import type { EventMap, FileElem, MessageRet, Sendable } from "icqq"
-import type { Group, Friend } from "./Bot.d.ts"
+import type { EventMap, GroupMessageEvent, PrivateMessageEvent, FileElem, MessageRet, Sendable } from "icqq"
+import type { Group, Friend, Client } from "./Bot.d.ts"
 
 export interface PluginRule {
   /** 正则或命令匹配 */
@@ -52,14 +52,14 @@ export interface PluginOptions<T extends keyof EventMap> {
   rule?: PluginRule[]
 }
 
-export class Event {
+export interface Event {
+  /** 发送者id */
+  user_id: number | string
+  /** 收到事件的Bot对象 */
+  bot: Client
   /** 文本消息 */
   msg?: string
-  /** 
-   * 被艾特者id  
-   * 多个at取最后一个  
-   * 会过滤掉at机器人
-   * */
+  /** 被艾特者id */
   at?: number | string
   /** 是否at机器人 */
   atBot?: true
@@ -67,42 +67,63 @@ export class Event {
   img?: string[]
   /** 触发者是否为主人 */
   isMaster?: true
+  /** 日志用户字符串 */
+  logText: string
   /** 是否为私聊 */
   isPrivate?: true
   /** 是否为群聊 */
   isGroup?: true
-  /** 日志用户字符串 */
-  logText: string
   /** 日志方法字符串 */
   logFnc: string
   /** 接收到的文件 */
   file?: FileElem
   /** 是否包含别名 */
   hasAlias?: true
-  /** 
-   * 撤回消息  
-   * 等效于 `e.group.recallMsg` 或 `e.friend.recallMsg`
-   */
-  recall?: (Group | Friend)["recallMsg"]
+  /** 撤回消息 */
+  recall?: (Group | Friend)['recallMsg']
   /**
-   * 回复消息
-   * @param msg 支持字符串或 segment
-   * @param quote 是否引用回复
-   * @param data 额外配置
-   */
+ * 回复消息
+ * @param msg 支持字符串或 segment
+ * @param quote 是否引用回复
+ * @param data 额外配置
+ */
   reply(msg: Sendable, quote?: boolean, data?: {
     /** 是否提及用户 */
     at?: boolean
     /** 多久之后撤回消息，0-120秒，0不撤回 */
     recallMsg?: number
   }): Promise<MessageRet & { error?: any[] }>
+  /** 适配器标识符 */
+  adapter_id?: this["bot"]["adapter"]["id"]
+  /** 适配器名称 */
+  adapter_name?: this["bot"]["adapter"]["name"]
 }
+
+/** 群聊事件 */
+// @ts-ignore
+export interface GroupEvent extends Event, GroupMessageEvent {
+  group_id: number | string
+  isGroup: true
+  isPrivate: false
+  group: Group
+}
+
+/** 私聊事件 */
+// @ts-ignore
+export interface PrivateEvent extends Event, PrivateMessageEvent {
+  isPrivate: true
+  isGroup: false
+  friend: Friend
+}
+
+export type MessageEvent = GroupEvent | PrivateEvent
+
 
 /**
  * Plugin
  */
 declare global {
-  class plugin<T extends keyof EventMap = keyof EventMap> {
+  class plugin<T extends keyof EventMap = never> {
     constructor(options?: PluginOptions<T>)
 
     /** 插件名称 */
@@ -123,7 +144,10 @@ declare global {
     namespace?: PluginOptions<T>["namespace"]
 
     /** 消息事件 */
-    e: Omit<Parameters<T extends keyof EventMap ? EventMap[T] : EventMap['message']>[0], 'reply'> & Event
+    e:
+      [T] extends [never]
+      ? MessageEvent
+      : Omit<Parameters<EventMap[T]>[0], "reply" | "user_id"> & Event
 
     reply: Event["reply"]
 
@@ -175,5 +199,3 @@ declare global {
 }
 
 export type Plugin<T extends keyof EventMap = keyof EventMap> = plugin<T>
-
-// export default Plugin

@@ -62,6 +62,8 @@ export interface Adapter {
   id: string
   /** 适配器名称 */
   name: string
+  /** 适配器版本号 */
+  version?: string
   [k: string]: any
 }
 
@@ -70,6 +72,8 @@ export interface Adapter {
  */
 // @ts-ignore
 export interface Client extends BaseClient {
+  /** bot账号 */
+  uin: number | string
   /** 返回好友列表 Map */
   fl: Map<number | string, FriendInfo>
   /** 返回群聊列表 Map */
@@ -86,6 +90,12 @@ export interface Client extends BaseClient {
 
   /** 适配器信息 */
   adapter: Adapter
+
+  /**
+   * 适配器信息
+   * @deprecated 已弃用，请使用 {@link adapter}
+   */
+  version?: this["adapter"]
 
   [k: string]: any
 }
