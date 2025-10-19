@@ -93,10 +93,10 @@ export interface BaseEvent {
     /** 多久之后撤回消息，0-120秒，0不撤回 */
     recallMsg?: number
   }): Promise<MessageRet & { error?: any[] }>
-  /** 适配器标识符 */
-  adapter_id?: this["bot"]["adapter"]["id"]
+  /** 聊天平台名称，同一个平台唯一 */
+  adapter_id: string
   /** 适配器名称 */
-  adapter_name?: this["bot"]["adapter"]["name"]
+  adapter_name: string
 }
 
 /** 群聊事件 */

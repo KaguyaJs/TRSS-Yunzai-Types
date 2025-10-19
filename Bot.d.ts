@@ -57,8 +57,8 @@ export interface Friend extends BaseFriend, User {
 }
 
 
-export interface Adapter {
-  /** 适配器标识符 */
+export class Adapter {
+  /** 平台标识符 */
   id: string
   /** 适配器名称 */
   name: string
@@ -88,14 +88,22 @@ export interface Client extends BaseClient {
   /** 获得一个群友对象 */
   pickMember: (group_id: number | string, user_id: number | string) => Member
 
-  /** 适配器信息 */
+  /** 
+   * 适配器
+   * @private
+   */
   adapter: Adapter
 
-  /**
-   * 适配器信息
-   * @deprecated 已弃用，请使用 {@link adapter}
-   */
-  version?: this["adapter"]
+  /** 版本 */
+  version: {
+    /** 版本号 */
+    id: string
+    /** 版本名 */
+    name: string
+    /** 版本全称 */
+    version?: string
+    [k: string]: string | undefined
+  }
 
   [k: string]: any
 }
