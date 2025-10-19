@@ -55,6 +55,8 @@ export interface PluginOptions<T extends keyof EventMap> {
 export interface BaseEvent {
   /** 发送者id */
   user_id: number | string
+  /** 收到事件的机器人id */
+  self_id: number | string
   /** 收到事件的Bot对象 */
   bot: Client
   /** 文本消息 */
@@ -150,7 +152,7 @@ declare global {
         ? [keyof EventMap] extends [T]
             ? MessageEvent
             : Event<T>
-        : Event<T>
+        : MessageEvent
 
     reply: BaseEvent["reply"]
 
