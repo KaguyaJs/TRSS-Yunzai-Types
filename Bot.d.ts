@@ -50,7 +50,8 @@ export interface Member extends BaseMember, User {
 /** 群对象 */
 // @ts-ignore
 export interface Group extends BaseGroup, User {
-  /** 群号  */
+  pickMember(uin: number, strict?: boolean): () => Member
+  /** 群号 */
   group_id: number | string
   /** 获取群信息 */
   getInfo: () => Promise<GroupInfo>
@@ -92,7 +93,7 @@ export interface Client extends BaseClient {
   pickFriend: (user_id: number | string, strict?: boolean) => Friend
   /** 获得一个群对象 */
   pickGroup: (group_id: number | string, strict?: boolean) => Group
-  /** 获得一个群友对象 */
+  /** 获得一个群成员对象 */
   pickMember: (group_id: number | string, user_id: number | string) => Member
 
   /** 
