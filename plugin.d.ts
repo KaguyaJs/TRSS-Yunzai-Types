@@ -52,7 +52,7 @@ export interface PluginOptions<T extends keyof EventMap> {
   rule?: PluginRule[]
 }
 
-export interface Event {
+export interface BaseEvent {
   /** 发送者id */
   user_id: number | string
   /** 收到事件的Bot对象 */
@@ -101,7 +101,7 @@ export interface Event {
 
 /** 群聊事件 */
 // @ts-ignore
-export interface GroupEvent extends Event, GroupMessageEvent {
+export interface GroupEvent extends BaseEvent, GroupMessageEvent {
   group_id: number | string
   isGroup: true
   isPrivate: false
@@ -110,7 +110,7 @@ export interface GroupEvent extends Event, GroupMessageEvent {
 
 /** 私聊事件 */
 // @ts-ignore
-export interface PrivateEvent extends Event, PrivateMessageEvent {
+export interface PrivateEvent extends BaseEvent, PrivateMessageEvent {
   isPrivate: true
   isGroup: false
   friend: Friend
@@ -118,12 +118,13 @@ export interface PrivateEvent extends Event, PrivateMessageEvent {
 
 export type MessageEvent = GroupEvent | PrivateEvent
 
+export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], "reply" | "user_id"> & BaseEvent
 
 /**
  * Plugin
  */
 declare global {
-  class plugin<T extends keyof EventMap = never> {
+  class plugin<T extends keyof EventMap = keyof EventMap> {
     constructor(options?: PluginOptions<T>)
 
     /** 插件名称 */
@@ -145,11 +146,13 @@ declare global {
 
     /** 消息事件 */
     e:
-      [T] extends [never]
-      ? MessageEvent
-      : Omit<Parameters<EventMap[T]>[0], "reply" | "user_id"> & Event
+      [T] extends [keyof EventMap]
+        ? [keyof EventMap] extends [T]
+            ? MessageEvent
+            : Event<T>
+        : Event<T>
 
-    reply: Event["reply"]
+    reply: BaseEvent["reply"]
 
     /**
      * 构造用于存储上下文的 key
