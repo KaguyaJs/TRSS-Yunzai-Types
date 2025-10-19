@@ -34,25 +34,32 @@ interface BotUin extends Array<string | number> {
 export interface User extends BaseUser {
   /** 用户id */
   user_id: number | string
+  /** 获取用户信息 */
   getInfo: () => Promise<FriendInfo | MemberInfo | undefined>
+  /** 获取头像链接 */
+  getAvatarUrl: () => Promise<string>
 }
 
 /** 群成员对象 */
 // @ts-ignore
 export interface Member extends BaseMember, User {
+  /** 获取群员信息 */
   getInfo: () => Promise<MemberInfo | undefined>
 }
 
 /** 群对象 */
 // @ts-ignore
 export interface Group extends BaseGroup, User {
+  /** 群号  */
   group_id: number | string
+  /** 获取群信息 */
   getInfo: () => Promise<GroupInfo>
 }
 
 /** 好友对象 */
 // @ts-ignore
 export interface Friend extends BaseFriend, User {
+  /** 获取好友信息 */
   getInfo: () => Promise<FriendInfo | undefined>
 }
 
