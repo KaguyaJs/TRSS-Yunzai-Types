@@ -19,9 +19,9 @@ export interface PluginTask {
   /** 定时任务名称 */
   name?: string
   /** 触定时任务方法 */
-  fnc?: string | Function
+  fnc: Function
   /** 定时任务corn表达式 */
-  cron?: string
+  cron: string
   /** 是否输出日志 */
   log?: boolean
 }
