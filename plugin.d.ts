@@ -59,8 +59,8 @@ export interface BaseEvent {
   self_id: number | string
   /** 收到事件的Bot对象 */
   bot: Client
-  /** 文本消息 */
-  msg?: string
+  /** 文本消息内容 */
+  msg: string
   /** 被艾特者id */
   at?: number | string
   /** 是否at机器人 */

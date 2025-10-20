@@ -15,7 +15,7 @@ import type {
   Sendable,
   MessageRet
 } from "icqq"
-import type { ToDispose, Merge } from "./internal/index.d.ts"
+import type { ToDispose } from "./internal/index.d.ts"
 
 
 interface BotUin extends Array<string | number> {
@@ -37,12 +37,14 @@ export interface User extends BaseUser {
   /** 获取用户信息 */
   getInfo: () => Promise<FriendInfo | MemberInfo | undefined>
   /** 获取头像链接 */
-  getAvatarUrl: () => Promise<string>
+  getAvatarUrl: (...args: any[]) => Promise<string>
 }
 
 /** 群成员对象 */
 // @ts-ignore
 export interface Member extends BaseMember, User {
+  /** 群成员所在的群号 */
+  group_id: string | number
   /** 获取群员信息 */
   getInfo: () => Promise<MemberInfo | undefined>
 }
@@ -55,6 +57,17 @@ export interface Group extends BaseGroup, User {
   group_id: number | string
   /** 获取群信息 */
   getInfo: () => Promise<GroupInfo>
+  setAdmin(uin: number | string, yes?: boolean): Promise<boolean>
+  setTitle(uin: number | string, title?: string, duration?: number): Promise<boolean>
+  setCard(uin: number | string, card?: string): Promise<boolean>
+  kickMember(uin: number | string, msg?: string, block?: boolean): Promise<boolean>
+  muteMember(uin: number | string, duration?: number): Promise<boolean>
+  pokeMember(uin: number | string): Promise<boolean>
+  getMuteMemberList(): Promise<({
+    uin: number | string | null
+    unMuteTime: string | null
+  } | null)[]>
+  getMemberMap(no_cache?: boolean): Promise<Map<number | string, MemberInfo>>
 }
 
 /** 好友对象 */
