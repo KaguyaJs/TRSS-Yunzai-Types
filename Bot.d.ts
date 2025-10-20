@@ -52,11 +52,11 @@ export interface Member extends BaseMember, User {
 /** 群对象 */
 // @ts-ignore
 export interface Group extends BaseGroup, User {
-  pickMember(uin: number, strict?: boolean): () => Member
   /** 群号 */
   group_id: number | string
   /** 获取群信息 */
   getInfo: () => Promise<GroupInfo>
+  pickMember(uin: number | string, strict?: boolean): Member
   setAdmin(uin: number | string, yes?: boolean): Promise<boolean>
   setTitle(uin: number | string, title?: string, duration?: number): Promise<boolean>
   setCard(uin: number | string, card?: string): Promise<boolean>
