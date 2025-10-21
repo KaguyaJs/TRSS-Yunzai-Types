@@ -320,7 +320,7 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
    * @param group_id 群号
    * @param args 消息内容及其他参数（传递给sendMsg)
    */
-  sendGroupMsg(bot_id: string | number | undefined | null, group_id: string | number, ...args: any[]): Promise<ReturnType<Friend["sendMsg"]>>
+  sendGroupMsg(bot_id: string | number | undefined | null, group_id: string | number, ...args: any[]): Promise<ReturnType<Group["sendMsg"]>>
 
   /**
    * 监听文本消息
