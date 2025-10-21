@@ -23,6 +23,13 @@ export interface FileTypeResult {
   md5?: string
 }
 
+export type BufferOptions = {
+  http?: boolean;
+  file?: boolean;
+  size?: number;
+  [k: string]: any
+}
+
 /**
  * Utils 单例的类定义（导出为默认实例）
  */
@@ -90,7 +97,7 @@ export declare class Utils {
   * @param file 写入文件的路径（可选，如果提供了 url 是 Buffer，则必须提供）
   * @param opts 选项（可选）
   */
-  download(url: string | Buffer, file?: string, opts?: any): Promise<DownloadResult>
+  download(url: string | Buffer, file?: string, opts?: BufferOptions): Promise<DownloadResult>
 
   /**
    * 将 Map 包装成带自动持久化的 Map（会把 set/delete 覆写为异步）
@@ -179,7 +186,7 @@ export declare class Utils {
    * @param opts 选项
    * @returns 解析后的 Buffer、URL 字符串或 file:// 路径
    */
-  Buffer(data: any, opts?: { http?: boolean; file?: boolean; size?: number } & Record<string, any>): Promise<Buffer | string>
+  Buffer(data: any, opts?: BufferOptions): Promise<Buffer | string>
 
   /**
    * 检测文件类型并返回对象 { name, url?, buffer?, type?, md5? }
@@ -188,7 +195,7 @@ export declare class Utils {
    * @param opts 选项（可选）
    * @returns 文件类型检测结果对象
    */
-  fileType(data: { file: Buffer | string; name?: string }, opts?: any): Promise<FileTypeResult>
+  fileType(data: { file: Buffer | string; name?: string }, opts?: BufferOptions): Promise<FileTypeResult>
 
   /**
    * 执行外部命令（支持字符串或数组）
