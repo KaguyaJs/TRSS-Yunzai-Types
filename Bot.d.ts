@@ -327,6 +327,7 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
    * @param fnc 自定义过滤逻辑
    */
   getTextMsg(fnc?: ((data: EventMap["message"]) => boolean) | { self_id: string | number; user_id: string | number }): Promise<string>
+
   /** 捕获主人发送的下一条消息 */
   getMasterMsg(): Promise<string>
 
