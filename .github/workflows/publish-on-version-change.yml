@@ -42,7 +42,6 @@ jobs:
           EXISTS=$(npm view "$PACKAGE@$VERSION" --registry $REGISTRY > /dev/null 2>&1 && echo "true" || echo "false")
           echo "exists=$EXISTS" >> $GITHUB_OUTPUT
 
-
       - name: ✅ 决定是否需要发布
         id: decide
         run: |
@@ -51,7 +50,6 @@ jobs:
           else
             echo "should_publish=true" >> $GITHUB_OUTPUT
           fi
-
 
       - name: 📦 准备 pnpm
         if: steps.decide.outputs.should_publish == 'true'
@@ -103,6 +101,13 @@ jobs:
           else
             npm publish --access public $TAG_FLAG
           fi
+
+      - name: 🔄 同步到国内镜像源
+        if: steps.decide.outputs.should_publish == 'true'
+        env:
+          PACKAGE_NAME: ${{ steps.pkg.outputs.name }}
+        run: |
+          curl -X PUT "https://registry-direct.npmmirror.com/-/package/$PACKAGE_NAME/syncs"
 
       - name: 🔖 确定是否为 prerelease（alpha/beta/rc）
         if: steps.decide.outputs.should_publish == 'true'
