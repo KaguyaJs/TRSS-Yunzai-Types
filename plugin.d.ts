@@ -81,6 +81,12 @@ export interface BaseEvent {
   file?: FileElem
   /** 是否包含别名 */
   hasAlias?: true
+  /** 引用消息ID */
+  reply_id?: string
+  /** 获取引用消息 */
+  getReply?: any
+  runtime?: any
+  user?: any
   /** 撤回消息 */
   recall?: (Group | Friend)['recallMsg']
   /**
