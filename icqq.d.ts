@@ -19,6 +19,7 @@ declare module "icqq" {
   }
 
   interface Discuss {
+    /** 群号 */
     // @ts-ignore
     group_id: string | number
   }
