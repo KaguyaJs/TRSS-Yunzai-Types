@@ -18,10 +18,13 @@ declare module "icqq" {
     getInfo: () => Promise<MemberInfo | undefined>
   }
 
+  interface Discuss {
+    // @ts-ignore
+    group_id: string | number
+  }
+
   /** 群对象 */
-  export interface Group {
-    /** 群号 */
-    group_id: number | string
+  interface Group {
     /** 获取群信息 */
     getInfo: () => Promise<GroupInfo>
     pickMember(uin: number | string, strict?: boolean): Member
