@@ -31,7 +31,7 @@ export type BufferOptions = {
 }
 
 /**
- * Utils 单例的类定义（导出为默认实例）
+ * Utils
  */
 export declare class Utils {
   /** 用于 sleep 的 symbol */

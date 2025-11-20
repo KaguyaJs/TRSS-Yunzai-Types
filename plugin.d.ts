@@ -205,8 +205,9 @@ declare global {
      * @param cfg 额外配置，会把 e 注入到 cfg
      */
     renderImg(plugin: string, tpl: string, data?: any, cfg?: Record<string, any>): Promise<any>
+
     [k: string]: any
   }
 }
 
-export type Plugin<T extends keyof EventMap = keyof EventMap> = plugin<T>
+export { plugin as Plugin }
