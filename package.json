@@ -24,14 +24,14 @@
     "./LICENSE"
   ],
   "devDependencies": {
-    "typedoc": "^0.28.13"
+    "typedoc": "^0.28.14"
   },
   "dependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
     "@types/ws": "^8.18.1",
     "chalk": "^5.6.2",
-    "icqq": ">=0.6.10",
+    "icqq": "^0.6.10",
     "level": "^10.0.0",
     "log4js": "^6.9.1",
     "redis": "^4.7.1"
