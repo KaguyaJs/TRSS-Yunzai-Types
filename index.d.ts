@@ -16,6 +16,7 @@ declare global {
   var logger: Logger
 }
 
+export type { Bot }
 export type * from "./Bot.d.ts"
 export type * from "./logger.d.ts"
 export type * from "./plugin.d.ts"
