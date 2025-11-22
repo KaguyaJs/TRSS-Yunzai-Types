@@ -59,6 +59,8 @@ pnpm add -D @kaguyajs/trss-yunzai-types
 
 如果想要获得更加准确的 e 事件类型，需要使用plugin泛型
 
+在 TypeScript 中：
+
 ```ts
 // plugin泛型使用事件名称以获得更精准的类型提示
 export class Example extends plugin<'message.group'> {
@@ -93,8 +95,9 @@ export class Example extends plugin<'message.group'> {
 
   // 如果你不希望给 e 赋予默认值也可以只赋予类型
   async test(e: typeof this.e) {
+    // 此时同样能够获得类型提示
     if (!(e.user_id === 10086 || e.isMaster)) return false
-    await e.reply("Hello world") // 此时同样能够获得类型提示
+    await e.reply("Hello world")
     return true
   }
   
@@ -147,13 +150,15 @@ export class Example extends plugin {
 }
 ```
 
+---
+
 通常情况下如果你不指定事件类型，一些群聊的字段和私聊的字段可能无法正常显示
 
 ```ts
 async abc(e: typeof this.e) {
-    e.group_id // 不存在的属性 在js中显示any
-    e.group.muteMember() // 未定义
-    e.friend.nickname // 不存在的属性或any
+    e.group_id // ❌ 不存在的属性 在js中显示any
+    e.group.muteMember() // ❌ 未定义
+    e.friend.nickname // ❌ 不存在的属性或any
 }
 ```
 
@@ -162,12 +167,12 @@ async abc(e: typeof this.e) {
 ```ts
 async abc(e: typeof this.e) {
   if (e.isGroup) {
-    e.group_id // 正确显示类型
-    e.group.muteMember(12345, 600) // 显示函数类型
+    e.group_id // ✅ 正确显示类型
+    e.group.muteMember(12345, 600) // ✅ 显示函数类型
   }
   if (e.isPrivate) {
-    e.frined.nickname // 显示类型与注释
-    e.friend.getAvatarUrl() // 显示函数类型与描述
+    e.frined.nickname // ✅ 正确显示类型与注释
+    e.friend.getAvatarUrl() // ✅ 正确显示函数类型与描述
   }
 }
 ```
