@@ -24,7 +24,8 @@ export type {
   User
 }
 
-interface BotUin extends Array<string | number> {
+/** Bot.uin 数组 */
+export interface BotUin extends Array<string | number> {
   now?: string | number
   /** 兼容：返回随机一个bot的uin */
   toJSON(): string | number
@@ -36,6 +37,7 @@ interface BotUin extends Array<string | number> {
   includes(value: any): boolean
 }
 
+/** 适配器 */
 export class Adapter {
   /** 平台标识符 */
   id: string
@@ -87,6 +89,7 @@ export interface Client extends BaseClient {
   [k: string]: any
 }
 
+/** Yunzai */
 export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
   on: ((name: `connect.${string}`, listener: (data: { self_id: number | string, bot: Client }) => void) => ToDispose<this>)
     & ((name: "connect", listener: (bot: Client) => void) => ToDispose<this>)
@@ -270,7 +273,7 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
    * @param user_id 用户id
    * @param args 消息内容及其他参数（传递给sendMsg)
    */
-  sendFriendMsg(bot_id: string | number | undefined | null, user_id: string | number, ...args: any[]): ReturnType<Friend["sendMsg"]> | undefined
+  sendFriendMsg(bot_id: string | number | undefined | null, user_id: string | number, ...args: any[]): ReturnType<Friend["sendMsg"]>
 
   /**
    * 发送一条群消息 (如果机器人不在线则会等待上线)

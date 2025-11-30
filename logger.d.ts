@@ -1,7 +1,7 @@
 import { type ChalkInstance } from "chalk"
 import log4js from "log4js"
 
-
+/** 日志工具 */
 export interface Logger extends ChalkInstance {
   /** Logger原始方法 */
   logger: {

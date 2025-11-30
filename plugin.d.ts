@@ -1,6 +1,7 @@
 import type { EventMap, GroupMessageEvent, PrivateMessageEvent, FileElem, MessageRet, Sendable } from "icqq"
 import type { Group, Friend, Client } from "./Bot.d.ts"
 
+/** 插件命令处理规则 */
 export interface PluginRule {
   /** 正则或命令匹配 */
   reg: string | RegExp
@@ -15,6 +16,7 @@ export interface PluginRule {
   [k: string]: any
 }
 
+/** 定时任务参数 */
 export interface PluginTask {
   /** 定时任务名称 */
   name?: string
@@ -33,6 +35,7 @@ export interface HandlerConfig {
   fn?: (...args: any[]) => any
 }
 
+/** 构造函数参数 */
 export interface PluginOptions<T extends keyof EventMap> {
   /** 插件名称 */
   name?: string
@@ -52,6 +55,7 @@ export interface PluginOptions<T extends keyof EventMap> {
   rule?: PluginRule[]
 }
 
+/** 消息事件自定义字段 */
 export interface BaseEvent {
   /** 发送者id */
   user_id: number | string
@@ -79,7 +83,7 @@ export interface BaseEvent {
   logFnc: string
   /** 接收到的文件 */
   file?: FileElem
-  /** 是否包含别名 */
+  /** 消息是否包含别名 */
   hasAlias?: true
   /** 引用消息ID */
   reply_id?: string
@@ -198,7 +202,7 @@ declare global {
     resolveContext(context: any): void
 
     /**
-     * renderImg：调用 Common.render 生成/渲染图片（源码 import "#miao" 的 Common）
+     * renderImg：调用 Common.render 生成/渲染图片（import "#miao" 的 Common）
      * @param plugin 渲染器所属 plugin 名
      * @param tpl 模板名
      * @param data 模板数据
