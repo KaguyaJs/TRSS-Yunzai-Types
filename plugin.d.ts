@@ -1,4 +1,4 @@
-import type { EventMap, GroupMessageEvent, PrivateMessageEvent, FileElem, MessageRet, Sendable } from "icqq"
+import type { EventMap, GroupMessageEvent, PrivateMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable } from "icqq"
 import type { Group, Friend, Client } from "./Bot.d.ts"
 
 /** 插件命令处理规则 */
@@ -33,6 +33,12 @@ export interface HandlerConfig {
   key?: string | string[]
   /** 处理函数 */
   fn?: (...args: any[]) => any
+}
+
+/** 发送消息的返回值 */
+export interface MessageRet extends BaseMessageRet {
+  /** 失败信息 */
+  error?: any[] 
 }
 
 /** 构造函数参数 */
@@ -104,7 +110,7 @@ export interface BaseEvent {
     at?: boolean
     /** 多久之后撤回消息，0-120秒，0不撤回 */
     recallMsg?: number
-  }): Promise<MessageRet & { error?: any[] }>
+  }): Promise<MessageRet>
   /** 聊天平台名称，同一个平台唯一 */
   adapter_id: string
   /** 适配器名称 */

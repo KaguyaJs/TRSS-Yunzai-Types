@@ -300,9 +300,9 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
    */
   sendMasterMsg(msg: Sendable, bot_array?: (string | number) | (string | number)[], sleep?: number): Promise<{
     /** bot */
-    [k: string]: {
+    [bot_uin: string]: {
       /** 消息返回 */
-      [k: string]: MessageRet
+      [user_id: string]: MessageRet
     }
   } | {}>
 
