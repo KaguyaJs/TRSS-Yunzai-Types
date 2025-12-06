@@ -1,6 +1,7 @@
 import type { Stats, StatOptions, MakeDirectoryOptions, RmOptions, GlobOptions } from "node:fs"
-import type { ChildProcess } from "child_process"
+import type { ChildProcess, ExecOptions as BaseExecOptions, SpawnOptions } from "child_process"
 import type { Level } from "level"
+import type { InspectOptions } from "node:util"
 
 export interface ExecResult {
   error: Error | null
@@ -28,6 +29,24 @@ export type BufferOptions = {
   file?: boolean;
   size?: number;
   [k: string]: any
+}
+
+export interface ExecOptions extends BaseExecOptions {
+  /** 
+   * 安静输出 
+   * 
+   * 开启后将以debug输出日志信息，否则mark
+   */
+  quiet?: boolean
+}
+
+export interface CmdStartOptions extends SpawnOptions {
+  /** 
+ * 安静输出 
+ * 
+ * 开启后将以debug输出日志信息，否则mark
+ */
+  quiet?: boolean
 }
 
 /**
@@ -166,10 +185,10 @@ export declare class Utils {
   /** 
    * 将数据转为字符串（可选传入 JSON.stringify 选项）
    * @param data 任意类型的值
-   * @param opts JSON.stringify 的选项（如 { replacer, space }）
+   * @param opts 在返回值的 JSON 文本中添加缩进、空格和换行符，使其更易于阅读。
    * @returns  转换后的字符串
    */
-  String(data: any, opts?: any): string
+  String(data: any, opts?: string | number): string
 
   /** 
    * 格式化并截断日志对象（util.inspect）
@@ -177,7 +196,7 @@ export declare class Utils {
    * @param opts util.inspect 的选项
    * @returns 格式化后的字符串
    */
-  Loging(data: any, opts?: any): string
+  Loging(data: any, opts?: InspectOptions): string
 
   /**
    * 将传入 data 解析为 Buffer（支持 base64://、http(s) URL、file://、Buffer）
@@ -201,17 +220,17 @@ export declare class Utils {
    * 执行外部命令（支持字符串或数组）
    * 返回 { error, stdout, stderr, raw }
    * @param cmd 要执行的命令（字符串或包含命令及参数的数组）
-   * @param opts Node.js child_process.exec 或 child_process.spawn 的选项（可选）
+   * @param opts 选项（可选）
    * @returns 命令执行结果对象
    */
-  exec(cmd: string | string[], opts?: any): Promise<ExecResult>
+  exec(cmd: string | string[], opts?: BaseExecOptions): Promise<ExecResult>
 
   /** 查找命令路径（where/command -v），失败返回 false
    * @param cmd 要查找的命令名
    * @param opts 选项（可选）
    * @returns 命令的绝对路径或 false
    */
-  cmdPath(cmd: string, opts?: any): Promise<string | false>
+  cmdPath(cmd: string, opts?: ExecOptions): Promise<string | false>
 
   /** 以独立进程启动命令（windows 会用 cmd /c start）
    * @param cmd 要启动的命令
@@ -219,7 +238,7 @@ export declare class Utils {
    * @param opts Node.js child_process.spawn 的选项（可选）
    * @returns 启动的子进程对象
    */
-  cmdStart(cmd: string, args?: string[], opts?: any): ChildProcess
+  cmdStart(cmd: string, args?: string[], opts?: CmdStartOptions): ChildProcess
 
   /** 按时间差格式化时间差（返回中文格式如 '1天2时3分'）
    * @param time1 第一个时间戳（可选，默认为当前时间）
@@ -240,13 +259,35 @@ export declare class Utils {
   promiseEvent(event: any, resolve: string | symbol, reject?: string | symbol, timeout?: number): Promise<any>
 
   /**
-   * 睡眠（如果传入 promise 则与 promise.race）
-   * 返回 timers.promises.setTimeout 返回的 Promise
-   * @param time 睡眠时间（毫秒）
-   * @param promise 可选，与睡眠 Promise 竞争的 Promise
-   * @returns 一个 Promise，在指定时间后 resolve 或在 promise resolve/reject 时 resolve/reject
+   * 睡眠指定时间。
+   *
+   * 如果传入一个 Promise，则两个 Promise 会使用 `Promise.race()` 竞争，
+   * 先完成的结果将作为返回值（包括 resolve 或 reject）。
+   *
+   * @param time - 睡眠时间（毫秒）。
+   * @param promise - 可选，与睡眠竞争的 Promise。
+   *
+   * @example
+   * // 只睡眠
+   * await sleep(1000)
+   * console.log('1 秒后执行')
+   *
+   * // 与其它 Promise 竞争
+   * const p = new Promise(resolve => setTimeout(() => resolve(42), 500))
+   * const result = await sleep(1000, p)
+   * console.log(result) // 42
+   *
+   * // 竞争中 promise 失败
+   * const p = new Promise((_, reject) => setTimeout(() => reject(new Error('出错')), 300))
+   * try {
+   *   await sleep(1000, p)
+   * } catch (err) {
+   *   console.error('捕获到错误:', err.message)
+   * }
    */
-  sleep(time: number, promise?: Promise<any>): Promise<any>
+  sleep(time: number): Promise<void>
+  sleep<T>(time: number, promise: Promise<T>): Promise<T>
+  sleep<T>(time: number, promise?: Promise<T>): Promise<T | void>
 
   /**
    * 防抖：返回包装后的函数（返回值为 Promise）
