@@ -223,7 +223,7 @@ export declare class Utils {
    * @param opts 选项（可选）
    * @returns 命令执行结果对象
    */
-  exec(cmd: string | string[], opts?: BaseExecOptions): Promise<ExecResult>
+  exec(cmd: string | string[], opts?: ExecOptions): Promise<ExecResult>
 
   /** 查找命令路径（where/command -v），失败返回 false
    * @param cmd 要查找的命令名
