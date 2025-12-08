@@ -1,5 +1,6 @@
 import { segment as BaseSegment, AtElem, ImageElem, PttElem, VideoElem, FileElem, segment } from "icqq"
 import type { MergeOpt } from "./internal/index.d.ts"
+import type { Readable } from "node:stream"
 
 interface segment {
   /**
@@ -8,12 +9,12 @@ interface segment {
    * @param data 消息内容
    * @returns 合并后的消息段
    */
-  custom<T extends string, D extends object>(type: T, data: D): { type: T } & D
+  custom<T extends string, D>(type: T, data: D): { type: T } & D
   /**
    * raw
    * @param data raw内容
    */
-  raw<D extends object>(data: D): { type: "raw", data: D }
+  raw<D>(data: D): { type: "raw", data: D }
   /**
    * Button
    * @param data BUrron消息内容
@@ -29,7 +30,7 @@ interface segment {
    * @param file 图片文件
    * @param name 图片名称
    */
-  image<F extends string, N extends string>(file: F, name?: N): MergeOpt<ImageElem, { type: "image", file: F, name?: N }>
+  image<F extends string | Readable | Buffer, N extends string>(file: F, name?: N): MergeOpt<ImageElem, { type: "image", file: F, name?: N }>
   /**
    * 艾特用户
    * @param qq 用户id，`"all"`为全体
@@ -41,19 +42,19 @@ interface segment {
    * @param file 语音文件
    * @param name 语音名称
    */
-  record<F extends string, N extends string>(file: F, name?: N): MergeOpt<PttElem, { type: "record", file: F, name?: N }>
+  record<F extends string | Buffer, N extends string>(file: F, name?: N): MergeOpt<PttElem, { type: "record", file: F, name?: N }>
   /**
    * 视频消息
    * @param file 视频文件
    * @param name 视频名称
    */
-  video<F extends string, N extends string>(file: F, name?: N): MergeOpt<VideoElem, { type: "video", file: F, name?: N }>
+  video<F extends string | Buffer, N extends string>(file: F, name?: N): MergeOpt<VideoElem, { type: "video", file: F, name?: N }>
   /**
    * 文件消息
    * @param file 文件
    * @param name 文件名称
    */
-  file<F extends string, N extends string>(file: F, name?: N): MergeOpt<FileElem, { type: "file", file: F, name?: N }>
+  file<F, N extends string>(file: F, name?: N): MergeOpt<FileElem, { type: "file", file: F, name?: N }>
   /**
    * 回复消息
    * @param id 消息id
