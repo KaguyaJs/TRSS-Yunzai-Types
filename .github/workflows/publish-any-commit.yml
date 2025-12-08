@@ -1,0 +1,29 @@
+name: Publish Any Commit
+on: [push, pull_request]
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 进行类型检查
+        run: tsc --noEmit
+
+      - name: 删除开发环境依赖
+        run: pnpm pkg delete devDependencies
+        
+      - name: 持续发布
+        run: pnpm dlx pkg-pr-new publish
