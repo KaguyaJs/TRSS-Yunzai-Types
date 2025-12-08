@@ -1,8 +1,9 @@
 # TRSS-Yunzai-Types
 
+[![pkg.pr.new](https://pkg.pr.new/badge/KaguyaJs/TRSS-Yunzai-Types)](https://pkg.pr.new/~/KaguyaJs/TRSS-Yunzai-Types)
+
 为 [TRSS-Yunzai](https://github.com/TimeRainStarSky/Yunzai) 提供全局对象的 TypeScript 类型支持。
 
-[![pkg.pr.new](https://pkg.pr.new/badge/KaguyaJs/TRSS-Yunzai-Types)](https://pkg.pr.new/~/KaguyaJs/TRSS-Yunzai-Types)
 
 > [!TIP]
 > 本项目提供的全局类型仅供参考，如需完整的模块类型支持，可以使用内置类型的 [Fork 版本](https://github.com/KaguyaJs/TRSS-Yunzai) 作为开发环境框架。
