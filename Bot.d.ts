@@ -240,7 +240,7 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
    * @param strict 严格模式
   */
   pickFriend(user_id: string | number): Friend
-  pickFriend(user_id: string | number, strict: false): Friend
+  pickFriend(user_id: string | number, strict?: false): Friend
   pickFriend(user_id: string | number, strict: true): Friend | false
   pickFriend(user_id: string | number, strict?: boolean): Friend | false
 
@@ -256,7 +256,7 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
    * @param strict 严格模式
    */
   pickGroup(group_id: string | number): Group
-  pickGroup(group_id: string | number, strict: false): Group
+  pickGroup(group_id: string | number, strict?: false): Group
   pickGroup(group_id: string | number, strict: true): Group | false
   pickGroup(group_id: string | number, strict?: boolean): Group | false
 
