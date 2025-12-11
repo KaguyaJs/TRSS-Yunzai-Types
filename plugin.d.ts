@@ -74,23 +74,23 @@ export interface MessageEvent extends BaseMessageEvent {
   /** 被艾特者id */
   at?: number | string
   /** 是否at机器人 */
-  atBot?: true
+  atBot?: boolean
   /** 图片消息数组 */
   img?: string[]
   /** 触发者是否为主人 */
-  isMaster?: true
+  isMaster?: boolean
   /** 日志用户字符串 */
   logText: string
   /** 是否为私聊 */
-  isPrivate?: true
+  isPrivate?: boolean
   /** 是否为群聊 */
-  isGroup?: true
+  isGroup?: boolean
   /** 日志方法字符串 */
   logFnc: string
   /** 接收到的文件 */
   file?: FileElem
   /** 消息是否包含别名 */
-  hasAlias?: true
+  hasAlias?: boolean
   /** 引用消息ID */
   reply_id?: string
   /** 获取引用消息 */
@@ -99,6 +99,10 @@ export interface MessageEvent extends BaseMessageEvent {
   user?: any
   /** 撤回消息 */
   recall?: (Group | Friend)['recallMsg']
+  /** 聊天平台名称，同平台唯一 */
+  adapter_id: string
+  /** 适配器名称 */
+  adapter_name: string
   /**
  * 回复消息
  * @param msg 支持字符串或 segment
@@ -111,10 +115,6 @@ export interface MessageEvent extends BaseMessageEvent {
     /** 多久之后撤回消息，0-120秒，0不撤回 */
     recallMsg?: number
   }): Promise<MessageRet>
-  /** 聊天平台名称，同一个平台唯一 */
-  adapter_id: string
-  /** 适配器名称 */
-  adapter_name: string
 }
 
 /** 群聊事件 */
