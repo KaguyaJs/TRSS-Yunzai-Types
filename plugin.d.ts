@@ -1,4 +1,4 @@
-import type { EventMap, GroupMessageEvent, PrivateMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable } from "icqq"
+import type { EventMap, GroupMessageEvent, PrivateMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable, MessageEvent as BaseMessageEvent } from "icqq"
 import type { Group, Friend, Client } from "./Bot.d.ts"
 
 /** 插件命令处理规则 */
@@ -62,7 +62,7 @@ export interface PluginOptions<T extends keyof EventMap> {
 }
 
 /** 消息事件自定义字段 */
-export interface BaseEvent {
+export interface MessageEvent extends BaseMessageEvent {
   /** 发送者id */
   user_id: number | string
   /** 收到事件的机器人id */
@@ -119,7 +119,7 @@ export interface BaseEvent {
 
 /** 群聊事件 */
 // @ts-ignore
-export interface GroupEvent extends BaseEvent, GroupMessageEvent {
+export interface GroupEvent extends MessageEvent, GroupMessageEvent {
   group_id: number | string
   isGroup: true
   isPrivate: false
@@ -128,15 +128,15 @@ export interface GroupEvent extends BaseEvent, GroupMessageEvent {
 
 /** 私聊事件 */
 // @ts-ignore
-export interface PrivateEvent extends BaseEvent, PrivateMessageEvent {
+export interface PrivateEvent extends MessageEvent, PrivateMessageEvent {
   isPrivate: true
   isGroup: false
   friend: Friend
 }
 
-export type MessageEvent = GroupEvent | PrivateEvent
+export type DefaultEvent = GroupEvent | PrivateEvent
 
-export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], "reply" | "user_id"> & BaseEvent
+export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], "reply" | "user_id"> & MessageEvent
 
 /**
  * Plugin
@@ -166,11 +166,11 @@ declare global {
     e:
       [T] extends [keyof EventMap]
         ? [keyof EventMap] extends [T]
-            ? MessageEvent
+            ? DefaultEvent
             : Event<T>
-        : MessageEvent
+        : DefaultEvent
 
-    reply: BaseEvent["reply"]
+    reply: MessageEvent["reply"]
 
     /**
      * 构造用于存储上下文的 key
