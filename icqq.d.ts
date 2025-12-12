@@ -47,19 +47,6 @@ declare module "icqq" {
     /** 获取好友信息 */
     getInfo: () => Promise<FriendInfo | undefined>
   }
-
-  // @ts-ignore
-  interface ForwardNode {
-    type: "node"
-    user_id?: string | number
-    message?: Sendable
-    data: {
-      nickname?: string
-      user_id?: string | number
-      message: Sendable
-      time?: number
-    }[]
-  }
 }
 
 export type * from "icqq"

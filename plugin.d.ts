@@ -1,4 +1,4 @@
-import type { EventMap, GroupMessageEvent, PrivateMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable, MessageEvent as BaseMessageEvent } from "icqq"
+import type { EventMap, GroupMessageEvent as BaseGroupMessageEvent, PrivateMessageEvent as BasePrivatMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable, MessageEvent as BaseMessageEvent, PrivateMessage } from "icqq"
 import type { Group, Friend, Client } from "./Bot.d.ts"
 
 /** 插件命令处理规则 */
@@ -38,7 +38,7 @@ export interface HandlerConfig {
 /** 发送消息的返回值 */
 export interface MessageRet extends BaseMessageRet {
   /** 失败信息 */
-  error?: any[] 
+  error?: any[]
 }
 
 /** 构造函数参数 */
@@ -62,7 +62,7 @@ export interface PluginOptions<T extends keyof EventMap> {
 }
 
 /** 消息事件自定义字段 */
-export interface MessageEvent extends BaseMessageEvent {
+export interface CustomEvent {
   /** 发送者id */
   user_id: number | string
   /** 收到事件的机器人id */
@@ -97,8 +97,6 @@ export interface MessageEvent extends BaseMessageEvent {
   getReply?: any
   runtime?: any
   user?: any
-  /** 撤回消息 */
-  recall?: (Group | Friend)['recallMsg']
   /** 聊天平台名称，同平台唯一 */
   adapter_id: string
   /** 适配器名称 */
@@ -118,25 +116,30 @@ export interface MessageEvent extends BaseMessageEvent {
 }
 
 /** 群聊事件 */
-// @ts-ignore
-export interface GroupEvent extends MessageEvent, GroupMessageEvent {
+export interface GroupMessageEvent extends CustomEvent, Omit<BaseGroupMessageEvent, keyof CustomEvent | 'group_id'> {
+  /** 群号 */
   group_id: number | string
-  isGroup: true
-  isPrivate: false
   group: Group
 }
 
 /** 私聊事件 */
-// @ts-ignore
-export interface PrivateEvent extends MessageEvent, PrivateMessageEvent {
-  isPrivate: true
-  isGroup: false
+export interface PrivatMessageEvent extends CustomEvent, Omit<BasePrivatMessageEvent, keyof CustomEvent> {
   friend: Friend
 }
 
-export type DefaultEvent = GroupEvent | PrivateEvent
+interface GroupEvent extends GroupMessageEvent {
+  isGroup: true
+  isPrivate: false
+}
 
-export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], "reply" | "user_id"> & MessageEvent
+interface PrivateEvent extends PrivatMessageEvent {
+  isPrivate: true
+  isGroup: false
+}
+
+export type MessageEvent = GroupMessageEvent | PrivateMessage
+
+export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], keyof CustomEvent> & CustomEvent
 
 /**
  * Plugin
@@ -163,14 +166,16 @@ declare global {
     namespace?: PluginOptions<T>["namespace"]
 
     /** 消息事件 */
-    e:
+    e: 
       [T] extends [keyof EventMap]
         ? [keyof EventMap] extends [T]
-            ? DefaultEvent
+          ? PrivateEvent | GroupEvent
+          : [T] extends 'message'
+            ? PrivateEvent | GroupEvent
             : Event<T>
-        : DefaultEvent
+        : PrivateEvent | GroupEvent
 
-    reply: MessageEvent["reply"]
+    reply: CustomEvent["reply"]
 
     /**
      * 构造用于存储上下文的 key
