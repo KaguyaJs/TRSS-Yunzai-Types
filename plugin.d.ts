@@ -1,4 +1,4 @@
-import type { EventMap, GroupMessageEvent as BaseGroupMessageEvent, PrivateMessageEvent as BasePrivatMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable, MessageEvent as BaseMessageEvent, PrivateMessage } from "icqq"
+import type { EventMap, GroupMessageEvent as BaseGroupMessageEvent, PrivateMessageEvent as BasePrivatMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable, PrivateMessageEvent } from "icqq"
 import type { Group, Friend, Client } from "./Bot.d.ts"
 
 /** 插件命令处理规则 */
@@ -137,7 +137,7 @@ interface PrivateEvent extends PrivatMessageEvent {
   isGroup: false
 }
 
-export type MessageEvent = GroupMessageEvent | PrivateMessage
+export type MessageEvent = GroupMessageEvent | PrivateMessageEvent
 
 export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], keyof CustomEvent> & CustomEvent
 
