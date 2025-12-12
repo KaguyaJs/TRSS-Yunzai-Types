@@ -47,6 +47,16 @@ declare module "icqq" {
     /** 获取好友信息 */
     getInfo: () => Promise<FriendInfo | undefined>
   }
+
+  interface GroupMessageEvent {
+    /** 是否为群聊 */
+    isGroup: true
+  }
+
+  interface PrivateMessageEvent {
+    /** 是否为私聊 */
+    isPrivate: true
+  }
 }
 
 export type * from "icqq"

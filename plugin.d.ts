@@ -81,10 +81,10 @@ export interface CustomEvent {
   isMaster?: boolean
   /** 日志用户字符串 */
   logText: string
-  /** 是否为私聊 */
-  isPrivate?: boolean
-  /** 是否为群聊 */
-  isGroup?: boolean
+  // /** 是否为私聊 */
+  // isPrivate?: true
+  // /** 是否为群聊 */
+  // isGroup?: true
   /** 日志方法字符串 */
   logFnc: string
   /** 接收到的文件 */
@@ -129,15 +129,15 @@ export interface PrivateMessageEvent extends CustomEvent, Omit<BasePrivatMessage
 
 interface GroupEvent extends GroupMessageEvent {
   isGroup: true
-  isPrivate: false
+  isPrivate?: never
 }
 
 interface PrivateEvent extends PrivateMessageEvent {
   isPrivate: true
-  isGroup: false
+  isGroup?: never
 }
 
-export type MessageEvent = GroupMessageEvent | PrivateMessageEvent
+export type MessageEvent = GroupEvent | PrivateEvent
 
 export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], keyof CustomEvent> & CustomEvent
 
