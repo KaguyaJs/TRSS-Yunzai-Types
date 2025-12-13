@@ -128,11 +128,13 @@ export interface PrivateMessageEvent extends CustomEvent, Omit<BasePrivatMessage
 }
 
 interface GroupEvent extends GroupMessageEvent {
+  /** 是否为群聊 */
   isGroup: true
   isPrivate?: never
 }
 
 interface PrivateEvent extends PrivateMessageEvent {
+  /** 是否为私聊 */
   isPrivate: true
   isGroup?: never
 }
@@ -169,11 +171,11 @@ declare global {
     e: 
       [T] extends [keyof EventMap]
         ? [keyof EventMap] extends [T]
-          ? PrivateEvent | GroupEvent
-          : [T] extends 'message'
-            ? PrivateEvent | GroupEvent
+          ? MessageEvent
+          : [T] extends ['message']
+            ? MessageEvent
             : Event<T>
-        : PrivateEvent | GroupEvent
+        : MessageEvent
 
     reply: CustomEvent["reply"]
 

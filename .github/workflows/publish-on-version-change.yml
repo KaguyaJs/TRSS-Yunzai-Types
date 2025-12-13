@@ -66,6 +66,10 @@ jobs:
       #   run: |
       #     echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
+      - name: 🔍 进行类型检查
+        if: steps.decide.outputs.should_publish == 'true'
+        run: tsc --noEmit
+
       - name: 🧾 预览将被打包的内容
         if: steps.decide.outputs.should_publish == 'true'
         run: npm pack --dry-run
