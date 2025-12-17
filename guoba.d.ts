@@ -5,9 +5,9 @@
  */
 
 import type { VNode } from "vue";
-import type { RuleObject, ObjectPaths, Recordable } from "./internal/index.d.ts"
+import type { RuleObject, ObjectPaths, Recordable, PathRecord } from "./internal/index.d.ts"
 
-export type SupportGuobaFnc = () => SupportGuoba | Promise<SupportGuoba>
+export type SupportGuobaFnc<T extends Record<string, any> = Record<string, any>> = () => SupportGuoba<T> | Promise<SupportGuoba<T>>
 
 export interface SupportGuoba<T = Record<string, any>> {
   /** 插件信息 */
@@ -71,7 +71,7 @@ export interface ConfigInfo<T extends Record<string, any> = Record<string, any>>
    * @param param.Result 返回结果
    * @returns 
   */
-  setConfigData?: (data: Record<string, any>, param: {
+  setConfigData?: (data: PathRecord<T> & { [k: string]: any }, param: {
     /** 返回结果 */
     Result: typeof Result
   }) => Result | Promise<Result>
