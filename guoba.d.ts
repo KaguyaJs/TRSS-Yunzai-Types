@@ -81,13 +81,13 @@ export type Schemas<T extends Record<string, any> = Record<string, any>> = Schem
 
 export interface Schema<T extends string = string> {
   /** 字段名 */
-  field: T;
+  field?: T;
   /** 标签名称 */
   label: string;
   /** 渲染组件 */
   component: ComponentType;
   /** 组件参数 */
-  componentProps: object
+  componentProps?: object
   /** 辅助文本 */
   subLabel?: string;
   /** 文本右侧的帮助文本 */
