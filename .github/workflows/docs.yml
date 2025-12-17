@@ -39,4 +39,5 @@ jobs:
           publish_dir: ./docs
           publish_branch: docs
           force_orphan: false
+          cname: trss.type.kaguya.fan
           commit_message: "Build: ${{ github.event.head_commit.message }}"
