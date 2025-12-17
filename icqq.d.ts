@@ -1,4 +1,4 @@
-import { FriendInfo, MemberInfo, GroupInfo, Sendable } from "icqq"
+import { FriendInfo, MemberInfo, GroupInfo } from "icqq"
 
 declare module "icqq" {
   interface User {
