@@ -1,10 +1,11 @@
 import type { EventMap, GroupMessageEvent as BaseGroupMessageEvent, PrivateMessageEvent as BasePrivatMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable } from "icqq"
 import type { Group, Friend, Client } from "./Bot.d.ts"
+import type { EventTool } from './internal/index.d.ts'
 
 /** 插件命令处理规则 */
 export interface PluginRule {
   /** 正则或命令匹配 */
-  reg: string | RegExp
+  reg?: string | RegExp
   /** 执行函数名 */
   fnc: string
   /** 可覆盖事件类型 */
@@ -42,7 +43,7 @@ export interface MessageRet extends BaseMessageRet {
 }
 
 /** 构造函数参数 */
-export interface PluginOptions<T extends keyof EventMap> {
+export interface PluginOptions<T extends EventKeys> {
   /** 插件名称 */
   name?: string
   /** 插件描述 */
@@ -127,27 +128,38 @@ export interface PrivateMessageEvent extends CustomEvent, Omit<BasePrivatMessage
   friend: Friend
 }
 
+/**
+ * 群聊消息事件类型收窄，`isGroup` 为` true`
+ */
 interface GroupEvent extends GroupMessageEvent {
   /** 是否为群聊 */
   isGroup: true
   isPrivate?: never
 }
 
+/**
+ * 私聊消息事件收窄，`isPrivate` 为 `true`
+ */
 interface PrivateEvent extends PrivateMessageEvent {
   /** 是否为私聊 */
   isPrivate: true
   isGroup?: never
 }
 
+/** 默认消息事件类型，可通过 `isGroup` `isPrivate`等关键字进行类型收窄 */
 export type MessageEvent = GroupEvent | PrivateEvent
 
-export type Event<T extends keyof EventMap> = Omit<Parameters<EventMap[T]>[0], keyof CustomEvent> & CustomEvent
+/** ICQQ 事件类型 */
+export type Event<T extends EventKeys> = Omit<EventTool.EventParamUnion<EventMap, T>, keyof CustomEvent> & CustomEvent
+
+/** 支持的事件名称，支持通匹 */
+export type EventKeys = EventTool.ExpandMeaningfulAnyStars<keyof EventMap>
 
 /**
  * Plugin
  */
 declare global {
-  class plugin<T extends keyof EventMap = keyof EventMap> {
+  class plugin<T extends EventKeys = EventKeys> {
     constructor(options?: PluginOptions<T>)
 
     /** 插件名称 */
@@ -169,8 +181,8 @@ declare global {
 
     /** 消息事件 */
     e: 
-      [T] extends [keyof EventMap]
-        ? [keyof EventMap] extends [T]
+      [T] extends [EventKeys]
+        ? [EventKeys] extends [T]
           ? MessageEvent
           : [T] extends ['message']
             ? MessageEvent

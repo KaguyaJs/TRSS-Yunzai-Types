@@ -155,7 +155,7 @@ jobs:
 
           PREV_TAG=$(git describe --tags --abbrev=0 "$TAG^" 2>/dev/null || true)
 
-          if echo "$TAG" | grep -Eq "alpha|beta|rc"; then
+          if echo "$TAG" | grep -Eq "alpha|beta|rc|dev"; then
            # 预发布，正常生成日志
            if [ -n "$PREV_TAG" ]; then
             NOTES=$(git log --no-merges --pretty=format:'- %s (%h)' "${PREV_TAG}..HEAD")
