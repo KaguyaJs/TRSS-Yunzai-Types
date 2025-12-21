@@ -9,7 +9,7 @@ export interface PluginRule {
   /** 执行函数名 */
   fnc: string
   /** 可覆盖事件类型 */
-  event?: string
+  event?: EventKeys
   /** 是否显示执行日志 */
   log?: boolean
   /** 触发者所需权限 */
