@@ -4,8 +4,7 @@
  * 具体等后期优化
  */
 
-import type { VNode } from "vue";
-import type { RuleObject, ObjectPaths, Recordable, PathRecord } from "./internal/index.d.ts"
+import type { RuleObject, ObjectPaths, Recordable, PathRecord, VNodeLike } from "./internal/index.d.ts"
 
 export type SupportGuobaFnc<T extends Record<string, any> = Record<string, any>> = () => SupportGuoba<T> | Promise<SupportGuoba<T>>
 
@@ -119,11 +118,11 @@ export interface Schema<T extends string = string> {
   /** 是否显示 */
   show?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
   /** 在 form-item 标签内渲染内容 */
-  render?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string;
+  render?: (renderCallbackParams: RenderCallbackParams) => VNodeLike | VNodeLike[] | string;
   /** 渲染 col 内容，需要外部 form-item 包装器 */
-  renderColContent?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string;
+  renderColContent?: (renderCallbackParams: RenderCallbackParams) => VNodeLike | VNodeLike[] | string;
   /** 渲染组件内容 */
-  renderComponentContent?: ((renderCallbackParams: RenderCallbackParams) => any) | VNode | VNode[] | string;
+  renderComponentContent?: ((renderCallbackParams: RenderCallbackParams) => any) | VNodeLike | VNodeLike[] | string;
   /** 动态禁用 */
   dynamicDisabled?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
   /** 动态规则 */

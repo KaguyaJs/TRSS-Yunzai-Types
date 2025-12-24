@@ -16,6 +16,12 @@ export type Merge<A, B> = Omit<A, keyof B> & B;
  */
 export type MergeOpt<A, B> = Merge<Partial<A>, B>;
 
+/**
+ * 将 T 中的 K 属性转化为可选
+ */
+export type Optional<T, K extends keyof T> =
+  Omit<T, K> & Partial<Pick<T, K>>
+
 /** 
  * 表示一个不返回值的函数类型，通常用于清理、释放资源等操作。
  * @returns 返回一个布尔值或不返回值，表示操作的成功或失败。
@@ -115,7 +121,7 @@ export type PathRecord<T, Prefix extends string = ""> = {
 /** 
  * 移植自 ant-design-vue，供 Guoba 组件类型使用
  */
-export type { RuleObject } from './rule.d.ts';
+export type { RuleObject, VNodeLike } from './rule.d.ts';
 
 /** 
  * 事件类型工具

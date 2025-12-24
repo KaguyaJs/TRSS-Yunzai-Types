@@ -16,7 +16,7 @@ import type {
   MessageRet,
   ForwardNode,
   Forwardable
-} from "icqq"
+} from "./icqq.d.ts"
 import type { ToDispose } from "./internal/index.d.ts"
 
 export type {
@@ -53,23 +53,9 @@ export class Adapter {
 /**
  * 单个 bot 实例
  */
-// @ts-ignore
-export interface Client extends BaseClient {
+export class Client extends BaseClient {
   /** bot账号 */
   uin: number | string
-  /** 返回好友列表 Map */
-  fl: Map<number | string, FriendInfo>
-  /** 返回群聊列表 Map */
-  gl: Map<number | string, GroupInfo>
-  /** 返回群成员列表 Map */
-  gml: Map<number | string, MemberInfo>
-
-  /** 获得一个好友对象 */
-  pickFriend: (user_id: number | string, strict?: boolean) => Friend
-  /** 获得一个群对象 */
-  pickGroup: (group_id: number | string, strict?: boolean) => Group
-  /** 获得一个群成员对象 */
-  pickMember: (group_id: number | string, user_id: number | string) => Member
 
   /** 
    * 适配器
@@ -87,20 +73,12 @@ export interface Client extends BaseClient {
     version?: string
     [k: string]: string | undefined
   }
-
-  [k: string]: any
 }
 
 /** Yunzai */
 export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
-  on: ((name: `connect.${string}`, listener: (data: { self_id: number | string, bot: Client }) => void) => ToDispose<this>)
-    & ((name: "connect", listener: (bot: Client) => void) => ToDispose<this>)
-    & ((name: "online", listener: (Yz: Yunzai) => void) => ToDispose<this>)
-    & Client["on"];
   // @ts-ignore
-  once: Client["once"]
-  trap: Client["trap"]
-  trip: Client["trip"]
+  on: Client["on"];
 
   /** 运行状态 */
   stat: {

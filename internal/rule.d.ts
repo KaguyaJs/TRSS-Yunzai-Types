@@ -3,11 +3,13 @@
  * 
  * @see https://pkg-size.dev/ant-design-vue@3.2.20
  */
-import type { VNode } from "vue";
+export interface VNodeLike {
+  [key: string]: any;
+}
 
 export declare type RuleType = 'string' | 'number' | 'boolean' | 'method' | 'regexp' | 'integer' | 'float' | 'object' | 'enum' | 'date' | 'url' | 'hex' | 'email';
 
-type VNodeChildAtom = VNode | string | number | boolean | null | undefined | void
+type VNodeChildAtom = VNodeLike | string | number | boolean | null | undefined | void
 type VueNode = VNodeChildAtom | VNodeChildAtom[]
 interface BaseRule {
     warningOnly?: boolean;

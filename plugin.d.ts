@@ -1,6 +1,13 @@
-import type { EventMap, GroupMessageEvent as BaseGroupMessageEvent, PrivateMessageEvent as BasePrivatMessageEvent, FileElem, MessageRet as BaseMessageRet, Sendable } from "icqq"
 import type { Group, Friend, Client } from "./Bot.d.ts"
 import type { EventTool } from './internal/index.d.ts'
+import type {
+  EventMap,
+  GroupMessageEvent as BaseGroupMessageEvent,
+  PrivateMessageEvent as BasePrivatMessageEvent,
+  FileElem,
+  MessageRet as BaseMessageRet,
+  Sendable
+} from "./icqq.d.ts"
 
 /** 插件命令处理规则 */
 export interface PluginRule {
@@ -180,7 +187,7 @@ declare global {
     namespace?: PluginOptions<T>["namespace"]
 
     /** 消息事件 */
-    e: 
+    e:
       [T] extends [EventKeys]
         ? [EventKeys] extends [T]
           ? MessageEvent

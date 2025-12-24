@@ -1,4 +1,12 @@
-import { segment as BaseSegment, AtElem, ImageElem, PttElem, VideoElem, FileElem, segment } from "icqq"
+import type {
+  segment as BaseSegment,
+  AtElem,
+  ImageElem,
+  PttElem,
+  VideoElem,
+  FileElem,
+  segment
+} from "./icqq.d.ts"
 import type { MergeOpt } from "./internal/index.d.ts"
 import type { Readable } from "node:stream"
 
@@ -24,7 +32,7 @@ interface segment {
    * Markdown
    * @param data Markdown消息内容
    */
-  markdown<D>(data: D): { type: "markdown", data: D }
+  markdown<D extends string = string>(data: D): { type: "markdown", data: D }
   /**
    * 图片消息
    * @param file 图片文件
@@ -68,7 +76,7 @@ interface segment {
     id: I
     text?: T,
     qq?: Q,
-    time?: T,
+    time?: TI,
     seq?: S
   }
 }
