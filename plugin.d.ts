@@ -6,7 +6,9 @@ import type {
   PrivateMessageEvent as BasePrivatMessageEvent,
   FileElem,
   MessageRet as BaseMessageRet,
-  Sendable
+  Sendable,
+  PrivateMessage,
+  GroupMessage
 } from "./icqq.d.ts"
 
 /** 插件命令处理规则 */
@@ -30,7 +32,21 @@ export interface PluginTask {
   name?: string
   /** 触定时任务方法 */
   fnc: () => void | Promise<void>
-  /** 定时任务corn表达式 */
+  /** 
+   * 定时任务corn表达式 
+   * 
+   * `秒 分 时 日 月 星期`
+   * 
+   * @example
+    * * * * * * *
+      │ │ │ │ │ │
+      │ │ │ │ │ └─ 星期 (0–7)
+      │ │ │ │ └─── 月 (1–12)
+      │ │ │ └───── 日 (1–31)
+      │ │ └─────── 时 (0–23)
+      │ └───────── 分 (0–59)
+      └─────────── 秒 (0–59)
+   */
   cron: string
   /** 是否输出日志 */
   log?: boolean
@@ -59,11 +75,19 @@ export interface PluginOptions<T extends EventKeys> {
   handler?: HandlerConfig | Record<string, any>
   /** namespace，设置handler时建议设置 */
   namespace?: string
-  /** 监听事件（默认 message） */
+  /** 
+   * 监听事件 
+   *
+   * @default "message"
+   */
   event?: T
-  /** 优先级（数字，越小优先级越高） */
+  /** 
+   * 优先级
+   *
+   * 数字越小优先级越高
+  */
   priority?: number
-  /** 定时任务（或数组） */
+  /** 定时任务 */
   task?: PluginTask | PluginTask[]
   /** 命令规则数组 */
   rule?: PluginRule[]
@@ -82,28 +106,26 @@ export interface CustomEvent {
   /** 被艾特者id */
   at?: number | string
   /** 是否at机器人 */
-  atBot?: boolean
+  atBot?: true
   /** 图片消息数组 */
   img?: string[]
   /** 触发者是否为主人 */
   isMaster?: boolean
   /** 日志用户字符串 */
   logText: string
-  // /** 是否为私聊 */
-  // isPrivate?: true
-  // /** 是否为群聊 */
-  // isGroup?: true
   /** 日志方法字符串 */
   logFnc: string
   /** 接收到的文件 */
   file?: FileElem
   /** 消息是否包含别名 */
-  hasAlias?: boolean
+  hasAlias?: true
   /** 引用消息ID */
   reply_id?: string
-  /** 获取引用消息 */
-  getReply?: any
+  /** 快速获取引用消息 */
+  getReply?: () => Promise<GroupMessage | PrivateMessage>
+  /** Miao 的 runtime */
   runtime?: any
+  /** Miao 的 user */
   user?: any
   /** 聊天平台名称，同平台唯一 */
   adapter_id: string
@@ -173,15 +195,29 @@ declare global {
     name: PluginOptions<T>["name"]
     /** 插件描述 */
     dsc: PluginOptions<T>["dsc"]
-    /** 监听事件（默认 message） */
+    /** 
+     * 监听事件
+     *  
+     * @default "message"
+     */
     event: PluginOptions<T>["event"]
-    /** 优先级（数字越小越高） */
+    /** 
+     * 优先级
+     * 
+     * 数字越小优先级越高 
+     */
     priority: PluginOptions<T>["priority"]
-    /** 定时任务（或数组） */
+    /** 
+     * 定时任务
+     * 
+     * 可以定时任务对象数组
+     */
     task: PluginOptions<T>["task"]
-    /** 命令规则数组 */
+    /** 
+     * 命令规则数组 
+     */
     rule: PluginOptions<T>["rule"]
-    /** 可选的 handler 配置（如果有） */
+    /** handler 配置 */
     handler?: PluginOptions<T>["handler"]
     /** handler 命名空间 */
     namespace?: PluginOptions<T>["namespace"]
