@@ -17,7 +17,6 @@ import type {
   ForwardElem,
   Forwardable
 } from "./icqq.d.ts"
-import type { ToDispose } from "./internal/index.d.ts"
 
 export type {
   Group,
