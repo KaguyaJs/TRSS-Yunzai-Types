@@ -799,11 +799,6 @@ interface ButtonElem {
         }[];
     };
 }
-// TODO 优化
-interface ButtonElem$1 {
-    type: "button";
-    data: any[]
-}
 interface Button {
     /** 按钮ID：在一个keyboard消息内设置唯一 */
     id?: string;
@@ -905,7 +900,7 @@ interface Forwardable {
 interface ForwardNode extends Forwardable {
     type: 'node';
 }
-/** 转发消息 */
+/** 转发节点消息 */
 interface ForwardElem {
     type: 'node';
     data: Optional<Forwardable, 'user_id'>[]
@@ -913,6 +908,39 @@ interface ForwardElem {
 interface RawElem {
     type: 'raw';
     data: any
+}
+/** 按钮基类 */
+export interface AButton {
+  /** 按钮上的文字 */
+  text: string
+  /** 按钮点击后的文字 */
+  
+  clicked_text?: string
+  /** 谁能点按钮 */
+  permission?: string | string[]
+  /** 平台额外字段，[平台名: 内容]，非目标平台忽略 */
+  [key: string]: unknown
+}
+/** 链接按钮 */
+export interface ButtonLink extends AButton {
+  link: string
+}
+/** 输入按钮 */
+export interface ButtonInput extends AButton {
+  input: string
+  /** 是否直接发送 */
+  send?: boolean
+}
+/** 回调按钮 */
+export interface ButtonCallback extends AButton {
+  callback: string
+}
+export type ButtonType = ButtonLink | ButtonInput | ButtonCallback
+/** 按钮消息 */
+interface ButtonElem$1 {
+  type: "button"
+  /** 按钮[行][列] */
+  data: ButtonType[][]
 }
 /** 注意：只有`ChainElem`中的元素可以组合发送，其他元素只能单独发送 */
 type MessageElem =

@@ -14,7 +14,7 @@ import type {
   GroupInfo,
   Sendable,
   MessageRet,
-  ForwardNode,
+  ForwardElem,
   Forwardable
 } from "./icqq.d.ts"
 import type { ToDispose } from "./internal/index.d.ts"
@@ -290,14 +290,14 @@ export declare class Yunzai extends (EventEmitter as { new(): EventEmitter }) {
    * 构造转发消息段
    * @param msg 消息内容
    */
-  makeForwardMsg(msg: Forwardable[]): ForwardNode
+  makeForwardMsg(msg: Forwardable[]): ForwardElem
 
   /**
    * 制作转发消息
    * @param msg 消息内容
    * @param node 转发节点内容
    */
-  makeForwardArray(msg?: Sendable | Sendable[], node?: Partial<Omit<Forwardable, 'message'>>): ForwardNode
+  makeForwardArray(msg?: Sendable | Sendable[], node?: Partial<Omit<Forwardable, 'message'>>): ForwardElem
 
   /**
    * 发送转发消息
