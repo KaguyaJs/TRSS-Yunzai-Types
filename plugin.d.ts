@@ -1,5 +1,5 @@
 import type { Group, Friend, Client } from "./Bot.d.ts"
-import type { EventTool } from './internal/index.d.ts'
+import type { EventTool, Drop } from './internal/index.d.ts'
 import type {
   EventMap,
   GroupMessageEvent as BaseGroupMessageEvent,
@@ -241,33 +241,36 @@ declare global {
     conKey(isGroup?: boolean): string
 
     /**
-     * setContext：设置上下文
-     * @param type 自定义类型字符串
+     * 设置上下文
+     * @param type 执行方法
      * @param isGroup 是否群聊
      * @param time 过期时间（秒）
      * @param timeout 超时提示文本
      */
-    setContext(type: string, isGroup?: boolean, time?: number, timeout?: string): any
+    setContext(type: string, isGroup?: boolean, time?: number, timeout?: string): typeof this.e
 
     /**
-     * getContext：获取上下文（不传 type 则返回整个 key 的对象）
+     * 获取上下文
+     *
+     * 不传 type 则返回整个 key 的对象
      */
-    getContext(type?: string, isGroup?: boolean): any
+    getContext(type: undefined, isGroup?: boolean): {} | undefined | Record<string, typeof this.e>
+    getContext(type?: string, isGroup?: boolean): typeof this.e
 
     /**
-     * finish：结束上下文并清理（会 clearTimeout）
+     * 结束上下文
      */
     finish(type?: string, isGroup?: boolean): void
 
     /**
-     * awaitContext：等待上下文
+     * 等待上下文
      */
-    awaitContext(...args: any[]): Promise<any>
+    awaitContext(...args: Drop<Parameters<typeof this.setContext>, 1>): Promise<typeof this.e>
 
     /**
-     * resolveContext：触发 resolve 并结束上下文
+     * 触发 resolve 并结束上下文
      */
-    resolveContext(context: any): void
+    resolveContext(context: MessageEvent): void
 
     /**
      * renderImg：调用 Common.render 生成/渲染图片（import "#miao" 的 Common）

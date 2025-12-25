@@ -118,6 +118,21 @@ export type PathRecord<T, Prefix extends string = ""> = {
         }
 }[keyof T & string];
 
+/**
+ * 排除 数组 T 的前 N 项
+ */
+export type Drop<
+  T extends any[],
+  N extends number,
+  I extends any[] = []
+> = I['length'] extends N
+  ? T
+  : T extends [any, ...infer R]
+    ? Drop<R, N, [...I, any]>
+    : [];
+
+
+
 /** 
  * 移植自 ant-design-vue，供 Guoba 组件类型使用
  */
